@@ -1,0 +1,54 @@
+/* Checkbox checkmark scale animation */
+@keyframes check {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.checkbox-checked .checkmark {
+  animation: check 0.2s ease-in-out;
+}
+
+/* Radio button dot scale animation */
+@keyframes radio-dot {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.radio-checked .radio-dot {
+  animation: radio-dot 0.2s ease-in-out;
+}
+
+/* Dropdown slide down animation */
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-enter {
+  animation: dropdown-in var(--transition-duration, 150ms)
+    var(--transition-timing, cubic-bezier(0.4, 0, 0.2, 1));
+}
