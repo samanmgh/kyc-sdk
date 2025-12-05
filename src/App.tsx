@@ -1,42 +1,63 @@
 import { useState } from "react";
 import "./App.css";
-import { TextInput, Button, Checkbox, RadioButton, RadioGroup, MultiSelect, ThemeProvider, useTheme } from ".";
+import {
+  TextInput,
+  Button,
+  Checkbox,
+  RadioButton,
+  RadioGroup,
+  MultiSelect,
+  KYCSDKProvider,
+  useSDKConfig,
+} from ".";
+import type { Theme } from ".";
 
 function ThemeSwitcher() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme, toggleTheme } = useSDKConfig();
 
   return (
-    <div style={{
-      padding: "1rem",
-      backgroundColor: "var(--color-muted)",
-      borderRadius: "var(--radius-md)",
-      marginBottom: "2rem"
-    }}>
-      <h3 style={{ marginTop: 0 }}>Theme Controls</h3>
-      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+    <div
+      style={{
+        padding: "1rem",
+        backgroundColor: "var(--muted)",
+        borderRadius: "var(--radius)",
+        marginBottom: "2rem",
+      }}
+    >
+      <h3 style={{ marginTop: 0 }}>Theme Controls (KYCSDKProvider)</h3>
+      <div
+        style={{
+          display: "flex",
+          gap: "0.5rem",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
         <Button
-          variant={theme === 'light' ? 'primary' : 'outline'}
-          size="sm"
-          onClick={() => setTheme('light')}
+          variant={theme === "light" ? "primary" : "outline"}
+          size='sm'
+          onClick={() => setTheme("light")}
         >
           ☀️ Light
         </Button>
         <Button
-          variant={theme === 'dark' ? 'primary' : 'outline'}
-          size="sm"
-          onClick={() => setTheme('dark')}
+          variant={theme === "dark" ? "primary" : "outline"}
+          size='sm'
+          onClick={() => setTheme("dark")}
         >
           🌙 Dark
         </Button>
-        <Button
-          variant={theme === 'system' ? 'primary' : 'outline'}
-          size="sm"
-          onClick={() => setTheme('system')}
-        >
-          💻 System
+        <Button variant='ghost' size='sm' onClick={toggleTheme}>
+          🔄 Toggle
         </Button>
-        <span style={{ marginLeft: "1rem", fontSize: "0.875rem", color: "var(--color-muted-foreground)" }}>
-          Current: <strong>{theme}</strong> (Resolved: <strong>{resolvedTheme}</strong>)
+        <span
+          style={{
+            marginLeft: "1rem",
+            fontSize: "0.875rem",
+            color: "var(--muted-foreground)",
+          }}
+        >
+          Theme: <strong>{theme}</strong>
         </span>
       </div>
     </div>
@@ -73,12 +94,19 @@ function AppContent() {
 
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "2rem" }}>
-      <h1>Component Preview</h1>
-      <p>Preview of all available components in the KYC SDK</p>
+      <h1>KYC SDK Component Preview</h1>
+      <p>Demo with simplified KYCSDKProvider (shadcn compatible)</p>
 
       <ThemeSwitcher />
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "2rem", marginTop: "2rem" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "2rem",
+          marginTop: "2rem",
+        }}
+      >
         {/* Button Component */}
         <section>
           <h2>Button Component</h2>
@@ -123,11 +151,7 @@ function AppContent() {
               onChange={e => setPassword(e.target.value)}
               required
             />
-            <TextInput
-              label='Disabled Input'
-              placeholder='This is disabled'
-              disabled
-            />
+            <TextInput label='Disabled Input' placeholder='This is disabled' disabled />
             <TextInput
               label='Input with Error'
               placeholder='This has an error'
@@ -155,11 +179,6 @@ function AppContent() {
             />
             <Checkbox label='Disabled Checkbox' disabled />
             <Checkbox label='Indeterminate Checkbox' indeterminate />
-            <Checkbox
-              label='Checkbox with Error'
-              error='This field is required'
-              size='lg'
-            />
           </div>
         </section>
 
@@ -173,39 +192,15 @@ function AppContent() {
             onChange={setGender}
             required
           >
-            <RadioButton
-              value='male'
-              label='Male'
-              description='Select if you identify as male'
-            />
+            <RadioButton value='male' label='Male' description='Select if you identify as male' />
             <RadioButton
               value='female'
               label='Female'
               description='Select if you identify as female'
             />
-            <RadioButton
-              value='other'
-              label='Other'
-              description='Select if you identify as other'
-            />
-            <RadioButton
-              value='prefer-not'
-              label='Prefer not to say'
-            />
+            <RadioButton value='other' label='Other' />
+            <RadioButton value='prefer-not' label='Prefer not to say' />
           </RadioGroup>
-
-          <div style={{ marginTop: "1rem" }}>
-            <RadioGroup
-              name='plan'
-              label='Select a plan (Horizontal)'
-              orientation='horizontal'
-              defaultValue='basic'
-            >
-              <RadioButton value='basic' label='Basic' />
-              <RadioButton value='pro' label='Pro' />
-              <RadioButton value='enterprise' label='Enterprise' />
-            </RadioGroup>
-          </div>
         </section>
 
         {/* MultiSelect Component */}
@@ -220,23 +215,6 @@ function AppContent() {
             searchable
             required
           />
-          <div style={{ marginTop: "1rem" }}>
-            <MultiSelect
-              label='Limited Selection (Max 3)'
-              placeholder='Select up to 3 options...'
-              options={skillOptions}
-              maxSelections={3}
-              searchable
-            />
-          </div>
-          <div style={{ marginTop: "1rem" }}>
-            <MultiSelect
-              label='Disabled MultiSelect'
-              placeholder='This is disabled'
-              options={skillOptions}
-              disabled
-            />
-          </div>
         </section>
 
         {/* Form Actions */}
@@ -246,14 +224,17 @@ function AppContent() {
             <Button variant='primary' loading={loading} onClick={handleSubmit}>
               Submit Form
             </Button>
-            <Button variant='outline' onClick={() => {
-              setEmail("");
-              setPassword("");
-              setAgreeToTerms(false);
-              setNewsletter(false);
-              setGender("");
-              setSelectedSkills([]);
-            }}>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setEmail("");
+                setPassword("");
+                setAgreeToTerms(false);
+                setNewsletter(false);
+                setGender("");
+                setSelectedSkills([]);
+              }}
+            >
               Reset
             </Button>
           </div>
@@ -264,10 +245,13 @@ function AppContent() {
 }
 
 function App() {
+  // Example: Parent controls theme state (like next-themes)
+  const [theme, setTheme] = useState<Theme>("light");
+
   return (
-    <ThemeProvider defaultTheme="system">
+    <KYCSDKProvider config={{ debug: true }} theme={theme} setTheme={setTheme}>
       <AppContent />
-    </ThemeProvider>
+    </KYCSDKProvider>
   );
 }
 
