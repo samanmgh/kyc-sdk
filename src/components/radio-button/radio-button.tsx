@@ -2,10 +2,7 @@ import { forwardRef, useContext, useId } from "react";
 import { cn } from "../../utils/cn";
 import type { RadioButtonProps } from "./radio-button.types";
 import { RadioContext } from "./radio-group-context";
-
-const RadioDot = () => (
-  <div className='radio-dot w-2.5 h-2.5 rounded-full bg-primary-foreground transition-transform duration-200 ease-out scale-100' />
-);
+import { RadioDot } from "./radio-dot";
 
 export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
   (
@@ -40,13 +37,13 @@ export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
       "transition-all duration-200 ease-out",
       "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
       "disabled:opacity-50 disabled:cursor-not-allowed",
-      // Unchecked state
+
       !checked && [
         "border-border bg-background",
         "hover:border-primary/60 hover:bg-primary/5",
         "active:scale-95",
       ],
-      // Checked state
+
       checked && [
         "bg-primary border-primary",
         "shadow-[0_0_0_1px_rgba(0,0,0,0.05)]",

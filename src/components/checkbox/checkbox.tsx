@@ -1,35 +1,8 @@
 import { forwardRef, useEffect, useId, useRef } from "react";
 import { cn } from "../../utils/cn";
 import { useControllableState } from "../../hooks/useControllableState";
+import { CheckIcon, MinusIcon } from "../../assets/icons";
 import type { CheckboxProps } from "./checkbox.types";
-
-const CheckIcon = () => (
-  <svg
-    className='checkmark w-3.5 h-3.5 animate-in zoom-in-50 duration-150'
-    viewBox='0 0 24 24'
-    fill='none'
-    stroke='currentColor'
-    strokeWidth='3.5'
-    strokeLinecap='round'
-    strokeLinejoin='round'
-  >
-    <polyline points='20 6 9 17 4 12' />
-  </svg>
-);
-
-const MinusIcon = () => (
-  <svg
-    className='w-3.5 h-3.5 animate-in zoom-in-50 duration-150'
-    viewBox='0 0 24 24'
-    fill='none'
-    stroke='currentColor'
-    strokeWidth='3.5'
-    strokeLinecap='round'
-    strokeLinejoin='round'
-  >
-    <line x1='5' y1='12' x2='19' y2='12' />
-  </svg>
-);
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
@@ -147,7 +120,11 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               checked && "checkbox-checked"
             )}
           >
-            {indeterminate ? <MinusIcon /> : <CheckIcon />}
+            {indeterminate ? (
+              <MinusIcon className='w-3.5 h-3.5 animate-in zoom-in-50 duration-150' />
+            ) : (
+              <CheckIcon className='checkmark w-3.5 h-3.5 animate-in zoom-in-50 duration-150' />
+            )}
           </div>
         </div>
 

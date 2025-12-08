@@ -1,4 +1,4 @@
-import "./styles/index.css";
+import "./styles/index.scss";
 
 export type SDKOptions = {
   apiKey?: string;

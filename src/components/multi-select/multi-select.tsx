@@ -1,38 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { cn } from "../../utils/cn";
 import { useControllableState } from "../../hooks/useControllableState";
+import { ChevronDownIcon, XIcon, CheckIcon } from "../../assets/icons";
 import type { MultiSelectProps } from "./multi-select.types";
-
-const ChevronDownIcon = () => (
-  <svg
-    width='16'
-    height='16'
-    viewBox='0 0 24 24'
-    fill='none'
-    stroke='currentColor'
-    strokeWidth='2'
-    strokeLinecap='round'
-    strokeLinejoin='round'
-  >
-    <polyline points='6 9 12 15 18 9' />
-  </svg>
-);
-
-const XIcon = () => (
-  <svg
-    width='14'
-    height='14'
-    viewBox='0 0 24 24'
-    fill='none'
-    stroke='currentColor'
-    strokeWidth='2'
-    strokeLinecap='round'
-    strokeLinejoin='round'
-  >
-    <line x1='18' y1='6' x2='6' y2='18' />
-    <line x1='6' y1='6' x2='18' y2='18' />
-  </svg>
-);
 
 export function MultiSelect<T = string>({
   options,
@@ -66,13 +36,11 @@ export function MultiSelect<T = string>({
     onChange,
   });
 
-  // Filter options based on search
   const filteredOptions =
     searchable && searchQuery
       ? options.filter(option => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
       : options;
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -86,7 +54,6 @@ export function MultiSelect<T = string>({
     }
   }, [isOpen]);
 
-  // Focus search input when opened
   useEffect(() => {
     if (isOpen && searchable && searchInputRef.current) {
       searchInputRef.current.focus();
@@ -246,10 +213,12 @@ export function MultiSelect<T = string>({
             <span className='text-muted-foreground text-sm'>{placeholder}</span>
           )}
 
-          <span className={cn(
-            "ml-auto text-muted-foreground transition-transform duration-200",
-            isOpen && "rotate-180"
-          )}>
+          <span
+            className={cn(
+              "ml-auto text-muted-foreground transition-transform duration-200",
+              isOpen && "rotate-180"
+            )}
+          >
             <ChevronDownIcon />
           </span>
         </div>
@@ -281,14 +250,13 @@ export function MultiSelect<T = string>({
 
             <div id={listboxId} role='listbox' aria-multiselectable='true' className='py-1'>
               {filteredOptions.length === 0 ? (
-                <div className='px-3 py-2 text-sm text-muted-foreground'>
-                  No options found
-                </div>
+                <div className='px-3 py-2 text-sm text-muted-foreground'>No options found</div>
               ) : (
                 filteredOptions.map((option, index) => {
                   const isSelected = selectedValues.includes(option.value);
                   const isActive = index === activeIndex;
-                  const isMaxReached = maxSelections && selectedValues.length >= maxSelections && !isSelected;
+                  const isMaxReached =
+                    maxSelections && selectedValues.length >= maxSelections && !isSelected;
 
                   return (
                     <div
@@ -308,7 +276,9 @@ export function MultiSelect<T = string>({
                         isMaxReached && "opacity-40 cursor-not-allowed",
                         !option.disabled && !isActive && !isMaxReached && "hover:bg-muted"
                       )}
-                      onClick={() => !option.disabled && !isMaxReached && toggleOption(option.value)}
+                      onClick={() =>
+                        !option.disabled && !isMaxReached && toggleOption(option.value)
+                      }
                     >
                       <div className='flex items-center gap-3'>
                         <div
@@ -323,25 +293,16 @@ export function MultiSelect<T = string>({
                           )}
                         >
                           {isSelected && (
-                            <svg
+                            <CheckIcon
                               width='12'
                               height='12'
-                              viewBox='0 0 24 24'
-                              fill='none'
                               stroke='white'
                               strokeWidth='3'
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
                               className='animate-in zoom-in-50 duration-150'
-                            >
-                              <polyline points='20 6 9 17 4 12' />
-                            </svg>
+                            />
                           )}
                         </div>
-                        <span className={cn(
-                          "flex-1",
-                          isSelected && "text-primary font-medium"
-                        )}>
+                        <span className={cn("flex-1", isSelected && "text-primary font-medium")}>
                           {option.label}
                         </span>
                       </div>
@@ -361,11 +322,7 @@ export function MultiSelect<T = string>({
       </div>
 
       {error && (
-        <p
-          id={errorId}
-          className='mt-1.5 text-sm text-destructive'
-          role='alert'
-        >
+        <p id={errorId} className='mt-1.5 text-sm text-destructive' role='alert'>
           {error}
         </p>
       )}

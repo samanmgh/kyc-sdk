@@ -13,8 +13,10 @@
   }
 }
 
-.checkbox-checked .checkmark {
-  animation: check 0.2s ease-in-out;
+.checkbox-checked {
+  .checkmark {
+    animation: check 0.2s ease-in-out;
+  }
 }
 
 /* Radio button dot scale animation */
@@ -32,8 +34,10 @@
   }
 }
 
-.radio-checked .radio-dot {
-  animation: radio-dot 0.2s ease-in-out;
+.radio-checked {
+  .radio-dot {
+    animation: radio-dot 0.2s ease-in-out;
+  }
 }
 
 /* Dropdown slide down animation */
