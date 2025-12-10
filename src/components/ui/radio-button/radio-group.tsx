@@ -1,9 +1,9 @@
 import { useId } from "react";
-import { cn } from "../../utils/cn";
-import { useControllableState } from "../../hooks/useControllableState";
-import type { RadioGroupProps, RadioContextValue } from "./radio-button.types";
+import { cn } from "../../../utils";
+import { useControllableState } from "../../../hooks";
+import type { RadioGroupProps, RadioContextValue } from "./radio-button.types.ts";
 
-import { RadioContext } from "./radio-group-context";
+import { RadioContext } from "./radio-group-context.ts";
 
 export { RadioContext };
 

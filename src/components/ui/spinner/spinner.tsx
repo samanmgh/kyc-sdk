@@ -1,6 +1,6 @@
-import { cn } from "../../utils/cn";
-import { SpinnerIcon } from "../../assets/icons";
-import type { SpinnerProps } from "./spinner.types";
+import { cn } from "../../../utils/cn.ts";
+import { SpinnerIcon } from "../../../assets/icons";
+import type { SpinnerProps } from "./spinner.types.ts";
 
 export const Spinner = ({ className, size = "md" }: SpinnerProps) => {
   const sizeClasses = {

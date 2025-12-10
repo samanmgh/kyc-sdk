@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useId, useRef } from "react";
-import { cn } from "../../utils/cn";
-import { useControllableState } from "../../hooks/useControllableState";
-import { CheckIcon, MinusIcon } from "../../assets/icons";
+import { cn } from "../../../utils";
+import { useControllableState } from "../../../hooks";
+import { CheckIcon, MinusIcon } from "../../../assets/icons";
 import type { CheckboxProps } from "./checkbox.types";
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(

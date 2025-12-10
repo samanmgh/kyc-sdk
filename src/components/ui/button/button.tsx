@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "../../../utils";
 import { Spinner } from "../spinner";
 import type { ButtonProps } from "./button.types";
 

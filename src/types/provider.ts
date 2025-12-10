@@ -8,6 +8,12 @@ export interface SDKConfig {
 
 export type Theme = "light" | "dark";
 
+export type Language = 'en';
+
+export interface Translation {
+    [key: string]: string | Translation;
+}
+
 export interface KYCSDKProviderProps {
   children: ReactNode;
   config?: SDKConfig;
@@ -15,9 +21,15 @@ export interface KYCSDKProviderProps {
   setTheme?: (theme: Theme) => void;
 }
 
-export interface SDKContextValue {
+export interface ThemeContextValue {
   config: SDKConfig;
   theme: Theme;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
+}
+
+export interface LanguageContextValue {
+    dictionary: Translation;
+    language: Language;
+    changeLanguage: (lang: Language) => void;
 }

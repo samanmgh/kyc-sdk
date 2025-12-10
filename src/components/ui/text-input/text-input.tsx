@@ -1,6 +1,6 @@
 import { forwardRef, useId } from "react";
-import { cn } from "../../utils/cn";
-import type { TextInputProps } from "./text-input.types";
+import { cn } from "../../../utils";
+import type { TextInputProps } from "./text-input.types.ts";
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   (

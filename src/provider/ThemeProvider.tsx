@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { SDKContext } from "./sdk-context";
-import { hasParentTheme, injectFallbackCSS } from "./css-detection";
-import type { KYCSDKProviderProps, SDKConfig, Theme } from "./provider-types";
+import { ThemeContext } from "./context";
+import { hasParentTheme, injectFallbackCSS } from "../utils";
+import type { KYCSDKProviderProps, SDKConfig, Theme } from "../types";
 
 function getSystemTheme(): Theme {
   if (typeof window === "undefined") return "light";
@@ -13,7 +13,7 @@ function getDocumentTheme(): Theme {
   return document.documentElement.classList.contains("dark") ? "dark" : "light";
 }
 
-export function KYCSDKProvider({
+export function ThemeProvider({
   children,
   config = {},
   theme: controlledTheme,
@@ -101,7 +101,7 @@ export function KYCSDKProvider({
     [config, theme, setTheme, toggleTheme]
   );
 
-  return <SDKContext.Provider value={contextValue}>{children}</SDKContext.Provider>;
+  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 }
 
-KYCSDKProvider.displayName = "KYCSDKProvider";
+ThemeProvider.displayName = "ThemeProvider";

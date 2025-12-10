@@ -1,5 +1,5 @@
 import { forwardRef, useContext, useId } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "../../../utils";
 import type { RadioButtonProps } from "./radio-button.types";
 import { RadioContext } from "./radio-group-context";
 import { RadioDot } from "./radio-dot";

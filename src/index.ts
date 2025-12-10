@@ -1,57 +1,145 @@
-import "./styles/index.scss";
+import type {
+    SDK_Config,
+    UserData,
+    LanguageChangeResponse,
+    ThemeChangeResponse,
+    DebugChangeResponse,
+    UserDataResponse,
+    ConfigResponse,
+    InitResponse
+} from "./types";
+import {InitializeWidget} from './main';
 
-export type SDKOptions = {
-  apiKey?: string;
-  debug?: boolean;
-};
+let widgetInstance: KYC_SDK | null = null;
 
 export class KYC_SDK {
-  private apiKey?: string;
-  private debug: boolean;
+    static version = "0.0.1";
 
-  static version = "0.1.0";
+    private apiKey: string;
+    private tenantId: number;
+    private debug: boolean;
+    private currentTheme: 'light' | 'dark' = 'light';
+    private currentLang: 'en' | 'de' = 'en';
+    private currentDir: 'ltr' | 'rtl' = 'ltr';
 
-  constructor(options: SDKOptions = {}) {
-    this.apiKey = options.apiKey;
-    this.debug = !!options.debug;
-    if (this.debug) this.log("KYC_SDK constructed", options);
-  }
+    constructor(options: SDK_Config) {
+        this.apiKey = options.apiKey;
+        this.tenantId = options.tenantId;
+        this.debug = !!options.debug;
 
-  init() {
-    this.log("KYC_SDK initialized", this.apiKey);
-    return Promise.resolve({ ok: true });
-  }
-
-  identify(id: string, meta: Record<string, unknown> = {}) {
-    this.log("identify", id, meta);
-    return Promise.resolve({ id, received: meta });
-  }
-
-  track(event: string, props: Record<string, unknown> = {}) {
-    this.log("track", event, props);
-    return Promise.resolve({ event, props });
-  }
-
-  private log(...args: any[]) {
-    if (this.debug) {
-      console.log("[KYC_SDK]", ...args);
+        if (this.debug) this.log("KYC_SDK constructed", options);
     }
-  }
+
+    public init(): Promise<InitResponse> {
+        this.log("KYC_SDK initialized", this.apiKey);
+
+        const config: SDK_Config = {
+            apiKey: this.apiKey,
+            tenantId: this.tenantId,
+            debug: this.debug
+        };
+
+        InitializeWidget(config);
+
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        widgetInstance = this;
+
+        return Promise.resolve({ok: true});
+    }
+
+    public changeLanguage(lang: 'en' | 'de'): Promise<LanguageChangeResponse> {
+        this.currentLang = lang;
+        this.currentDir = 'ltr';
+
+        this.log("Language changed to", lang);
+
+        // Dispatch custom event to notify widget of language change
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('widget-language-change', {
+                detail: {lang, dir: this.currentDir}
+            }));
+        }
+
+        return Promise.resolve({
+            success: true,
+            lang: this.currentLang,
+            dir: this.currentDir
+        });
+    }
+
+    public changeTheme(theme: 'light' | 'dark'): Promise<ThemeChangeResponse> {
+        this.currentTheme = theme;
+
+        this.log("Theme changed to", theme);
+
+        // Dispatch custom event to notify widget of theme change
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('widget-theme-change', {
+                detail: {theme}
+            }));
+        }
+
+        return Promise.resolve({
+            success: true,
+            theme: this.currentTheme
+        });
+    }
+
+    public setDebug(enabled: boolean): Promise<DebugChangeResponse> {
+        this.debug = enabled;
+
+        this.log("Debug mode", enabled ? "enabled" : "disabled");
+
+        // Dispatch custom event to notify widget of debug change
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('widget-debug-change', {
+                detail: {debug: this.debug}
+            }));
+        }
+
+        return Promise.resolve({
+            success: true,
+            debug: this.debug
+        });
+    }
+
+    public sendUserData(userData: UserData): Promise<UserDataResponse> {
+        this.log("User data received", userData);
+
+        const userInfo = {
+            ...userData,
+        };
+
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('widget-user-data', {
+                detail: {userData: userInfo}
+            }));
+        }
+
+        return Promise.resolve({
+            success: true,
+            userData: userInfo
+        });
+    }
+
+    public getConfig(): Promise<ConfigResponse> {
+        return Promise.resolve({
+            theme: this.currentTheme,
+            lang: this.currentLang,
+            dir: this.currentDir,
+            debug: this.debug,
+        });
+    }
+
+    private log(...args: unknown[]): void {
+        if (this.debug) {
+            console.log("[KYC_SDK]", ...args);
+        }
+    }
+}
+
+export function getWidgetInstance(): KYC_SDK | null {
+    return widgetInstance;
 }
 
 export default KYC_SDK;
-
-export { TextInput } from "./components/text-input";
-export type { TextInputProps } from "./components/text-input";
-export { Button } from "./components/button";
-export type { ButtonProps } from "./components/button";
-export { Checkbox } from "./components/checkbox";
-export type { CheckboxProps } from "./components/checkbox";
-export { RadioButton, RadioGroup } from "./components/radio-button";
-export type { RadioButtonProps, RadioGroupProps } from "./components/radio-button";
-export { MultiSelect } from "./components/multi-select";
-export type { MultiSelectProps, MultiSelectOption } from "./components/multi-select";
-export { KYCSDKProvider, useSDKConfig, useSDKTheme } from "./provider";
-export type { KYCSDKProviderProps, SDKConfig, Theme, SDKContextValue } from "./provider";
-export { useControllableState } from "./hooks/useControllableState";
-export type { UseControllableStateParams } from "./hooks/useControllableState";

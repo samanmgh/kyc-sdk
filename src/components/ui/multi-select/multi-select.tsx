@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { cn } from "../../utils/cn";
-import { useControllableState } from "../../hooks/useControllableState";
-import { ChevronDownIcon, XIcon, CheckIcon } from "../../assets/icons";
+import { cn } from "../../../utils";
+import { useControllableState } from "../../../hooks";
+import { ChevronDownIcon, XIcon, CheckIcon } from "../../../assets/icons";
 import type { MultiSelectProps } from "./multi-select.types";
 
 export function MultiSelect<T = string>({

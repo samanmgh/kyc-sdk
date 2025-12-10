@@ -1,3 +1,3 @@
-export { KYCSDKProvider } from "./KYCSDKProvider";
-export { useSDKConfig, useSDKTheme } from "./useSDKConfig";
-export type { KYCSDKProviderProps, SDKConfig, Theme, SDKContextValue } from "./provider-types";
+export { ThemeProvider } from "./ThemeProvider";
+export { LanguageProvider } from "./LanguageProvider";
+export { useSDKConfig, useSDKTheme } from "../hooks/useSDKConfig.ts";

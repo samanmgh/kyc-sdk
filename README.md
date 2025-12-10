@@ -25,10 +25,10 @@ import "@vero-compliance/kyc-sdk/styles";
 
 ```tsx
 "use client";
-import { KYCSDKProvider } from "@vero-compliance/kyc-sdk";
+import { ThemeProvider } from "@vero-compliance/kyc-sdk";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <KYCSDKProvider>{children}</KYCSDKProvider>;
+  return <ThemeProvider>{children}</ThemeProvider>;
 }
 ```
 
@@ -82,14 +82,14 @@ SDK components will automatically use your values.
 
 ```tsx
 import { useTheme } from "next-themes";
-import { KYCSDKProvider } from "@vero-compliance/kyc-sdk";
+import { ThemeProvider } from "@vero-compliance/kyc-sdk";
 
 function Providers({ children }) {
   const { theme, setTheme } = useTheme();
   return (
-    <KYCSDKProvider theme={theme} setTheme={setTheme}>
+    <ThemeProvider theme={theme} setTheme={setTheme}>
       {children}
-    </KYCSDKProvider>
+    </ThemeProvider>
   );
 }
 ```

@@ -1,27 +1,27 @@
 import { useContext } from "react";
-import { SDKContext } from "./sdk-context";
-import type { SDKContextValue, Theme } from "./provider-types";
+import {ThemeContext} from "../provider/context";
+import type {ThemeContextValue, Theme} from "../types";
 
 function getSystemTheme(): Theme {
   if (typeof window === "undefined") return "light";
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-function getDefaultContextValue(): SDKContextValue {
+function getDefaultContextValue(): ThemeContextValue {
   const systemTheme = getSystemTheme();
   if (typeof window !== "undefined") {
-    console.warn("[KYC SDK] useSDKConfig must be used within KYCSDKProvider.");
+    console.warn("[KYC SDK] useSDKConfig must be used within ThemeProvider.");
   }
   return {
     config: {},
     theme: systemTheme,
-    setTheme: () => console.warn("[KYC SDK] Cannot set theme outside KYCSDKProvider"),
-    toggleTheme: () => console.warn("[KYC SDK] Cannot toggle theme outside KYCSDKProvider"),
+    setTheme: () => console.warn("[KYC SDK] Cannot set theme outside ThemeProvider"),
+    toggleTheme: () => console.warn("[KYC SDK] Cannot toggle theme outside ThemeProvider"),
   };
 }
 
-export function useSDKConfig(): SDKContextValue {
-  const context = useContext(SDKContext);
+export function useSDKConfig(): ThemeContextValue {
+  const context = useContext(ThemeContext);
   if (!context) return getDefaultContextValue();
   return context;
 }

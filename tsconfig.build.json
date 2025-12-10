@@ -12,7 +12,7 @@
   "include": ["src"],
   "exclude": [
     "src/main.tsx",
-    "src/App.tsx",
+    "src/Widget.tsx",
     "src/App.css",
     "src/**/*.test.ts",
     "src/**/*.test.tsx"

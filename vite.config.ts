@@ -12,8 +12,8 @@ export default defineConfig({
       include: ["src"],
       exclude: [
         "src/main.tsx",
-        "src/App.tsx",
-        "src/App.css",
+        "src/Widget.tsx",
+        "src/Widget.css",
         "src/**/*.test.ts",
         "src/**/*.test.tsx",
       ],
