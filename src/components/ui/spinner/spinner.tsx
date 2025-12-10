@@ -1,4 +1,4 @@
-import { cn } from "../../../utils/cn.ts";
+import { cn } from "../../../utils";
 import { SpinnerIcon } from "../../../assets/icons";
 import type { SpinnerProps } from "./spinner.types.ts";
 

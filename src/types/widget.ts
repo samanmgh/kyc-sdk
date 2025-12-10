@@ -70,19 +70,3 @@ export interface SDKWidget {
     theme: 'light' | 'dark';
     dir: 'ltr' | 'rtl';
 }
-
-export interface WidgetEventMap {
-    'widget-language-change': { lang: 'en' | 'de'; dir: 'ltr' | 'rtl' };
-    'widget-theme-change': { theme: 'light' | 'dark' };
-    'widget-debug-change': { debug: boolean };
-    'widget-user-data': {
-        userData: {
-            firstName: string;
-            lastName: string;
-            userRefId: string;
-            email?: string;
-            phone?: string;
-            [key: string]: unknown;
-        }
-    }
-};
