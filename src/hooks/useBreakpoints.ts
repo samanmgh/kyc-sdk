@@ -25,15 +25,16 @@ export const useBreakpoints = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const mediaQueries = (window: any) => {
-    return {
-      sm: window.matchMedia(`(max-width: ${breakpoints.sm})`),
-      md: window.matchMedia(`(min-width: ${breakpoints.sm}) and (max-width: ${breakpoints.md})`),
-      lg: window.matchMedia(`(min-width: ${breakpoints.md}) and (max-width: ${breakpoints.lg})`),
-      xl: window.matchMedia(`(min-width: ${breakpoints.lg})`)
+    const mediaQueries = (win: Window) => {
+        return {
+            sm: win.matchMedia(`(max-width: ${breakpoints.sm})`),
+            md: win.matchMedia(`(min-width: ${breakpoints.sm}) and (max-width: ${breakpoints.md})`),
+            lg: win.matchMedia(`(min-width: ${breakpoints.md}) and (max-width: ${breakpoints.lg})`),
+            xl: win.matchMedia(`(min-width: ${breakpoints.lg})`)
+        };
     };
-  };
-  const handleMediaQueryChange = () => {
+
+    const handleMediaQueryChange = () => {
     const isXl = mediaQueries(window).xl.matches;
     const isLg = mediaQueries(window).lg.matches || isXl;
     const isMd = mediaQueries(window).md.matches || isLg;
