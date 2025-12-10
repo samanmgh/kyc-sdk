@@ -8,7 +8,6 @@ import componentStyles from './styles/components.scss?raw';
 import indexStyles from './styles/index.scss?raw';
 
 export function InitializeWidget(config: SDK_Config) {
-    console.log(config)
     const { apiKey, tenantId } = config;
     const [theme, setTheme] = useState<Theme>("light");
 
