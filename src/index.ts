@@ -30,7 +30,7 @@ export class KYC_SDK {
         if (this.debug) this.log("KYC_SDK constructed", options);
     }
 
-    public init(): Promise<InitResponse> {
+    public init(containerSelector?: string): Promise<InitResponse> {
         this.log("KYC_SDK initialized", this.apiKey);
 
         const config: SDK_Config = {
@@ -39,7 +39,7 @@ export class KYC_SDK {
             debug: this.debug
         };
 
-        InitializeWidget(config);
+        InitializeWidget(config, containerSelector);
 
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         widgetInstance = this;

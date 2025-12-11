@@ -13,6 +13,7 @@
   "exclude": [
     "src/main.tsx",
     "src/Widget.tsx",
+    "src/playground.tsx",
     "src/App.css",
     "src/**/*.test.ts",
     "src/**/*.test.tsx"

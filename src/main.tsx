@@ -1,15 +1,49 @@
-import {StrictMode, useState} from 'react'
+import {StrictMode} from 'react'
 import { createRoot } from 'react-dom/client';
 import Widget from './Widget';
 import { LanguageProvider, ThemeProvider } from './provider';
-import type {SDK_Config, Theme} from "./types";
+import type {SDK_Config} from "./types";
 import themeStyles from './styles/theme.scss?raw';
-import componentStyles from './styles/components.scss?raw';
-import indexStyles from './styles/index.scss?raw';
+import './index.css';
 
-export function InitializeWidget(config: SDK_Config) {
+export function InitializeWidget(config: SDK_Config, containerSelector?: string) {
     const { apiKey, tenantId } = config;
-    const [theme, setTheme] = useState<Theme>("light");
+
+    if (!localStorage.getItem('apiKey')) {
+        localStorage.setItem('apiKey', apiKey);
+    }
+
+    if (!localStorage.getItem('tenantId')) {
+        sessionStorage.setItem('tenantId', String(tenantId));
+    }
+
+    const targetContainer = containerSelector ? document.querySelector(containerSelector) : null;
+
+    if (targetContainer) {
+        const inlineContainer = document.createElement('div');
+        inlineContainer.id = 'widget-inline-container';
+        inlineContainer.style.width = '100%';
+        inlineContainer.style.height = '100%';
+        inlineContainer.style.minHeight = '600px';
+
+        targetContainer.appendChild(inlineContainer);
+
+        const themeStyle = document.createElement('style');
+        themeStyle.textContent = themeStyles;
+        document.head.appendChild(themeStyle);
+
+        const root = createRoot(inlineContainer);
+        root.render(
+            <StrictMode>
+                <LanguageProvider>
+                    <ThemeProvider config={{ debug: config.debug }}>
+                        <Widget />
+                    </ThemeProvider>
+                </LanguageProvider>
+            </StrictMode>
+        );
+        return;
+    }
 
     let iframe = document.getElementById('widget-iframe') as HTMLIFrameElement;
 
@@ -25,35 +59,14 @@ export function InitializeWidget(config: SDK_Config) {
             sessionStorage.setItem('tenantId', String(tenantId));
         }
 
-        const injectStyle = (css: string) => {
-            const style = iframeDoc.createElement('style');
-            style.textContent = css;
-            iframeDoc.head.appendChild(style);
-        };
-
+        // Set transparent background
         iframeDoc.body.style.backgroundColor = 'transparent';
         iframeDoc.documentElement.style.backgroundColor = 'transparent';
 
-        injectStyle('html, body { margin: 0; padding: 0; background: transparent !important; background-color: transparent !important }');
-
-        const combinedStyles = `
-            ${themeStyles}
-            ${componentStyles}
-            ${indexStyles}
-        `;
-
-        injectStyle(combinedStyles);
-
-        injectStyle(`
-            :root {
-                ${themeStyles.match(/:root\s*{([^}]+)}/)?.[1] || ''}
-            }
-            .dark {
-                ${themeStyles.match(/\.dark\s*{([^}]+)}/)?.[1] || ''}
-            }
-            ${componentStyles}
-            ${indexStyles}
-        `);
+        // Inject theme CSS variables
+        const themeStyle = iframeDoc.createElement('style');
+        themeStyle.textContent = themeStyles;
+        iframeDoc.head.appendChild(themeStyle);
 
         const container = iframeDoc.createElement('div');
         container.id = 'widget-container';
@@ -63,12 +76,25 @@ export function InitializeWidget(config: SDK_Config) {
         root.render(
             <StrictMode>
                 <LanguageProvider>
-                    <ThemeProvider config={{ debug: true }} theme={theme} setTheme={setTheme}>
+                    <ThemeProvider config={{ debug: config.debug }}>
                         <Widget />
                     </ThemeProvider>
                 </LanguageProvider>
             </StrictMode>
         );
+
+        // Show iframe after content is rendered in centered fullscreen mode
+        setTimeout(() => {
+            iframe.style.display = 'flex';
+            iframe.style.justifyContent = 'center';
+            iframe.style.alignItems = 'center';
+            iframe.style.width = '100vw';
+            iframe.style.height = '100vh';
+            iframe.style.top = '0';
+            iframe.style.left = '0';
+            iframe.style.right = 'auto';
+            iframe.style.bottom = 'auto';
+        }, 100);
     };
 
     if (!iframe) {

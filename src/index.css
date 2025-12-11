@@ -1,3 +1,4 @@
+@import "tailwindcss";
 :root {
   /* Using colors from styles/theme.css converted to oklch */
   --background: oklch(1 0 0); /* white */
