@@ -9,12 +9,22 @@ import "./index.css";
 function Playground() {
   const [config, setConfig] = useState<PlaygroundConfig>(DEFAULT_CONFIG);
   const [showConfigModal, setShowConfigModal] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState(config.language || 'en');
   const { isInitialized, showContainer, initialize } = useSDKInitialization();
 
   const handleInitialize = () => initialize(config);
 
   const handleConfigChange = (updates: Partial<PlaygroundConfig>) => {
     setConfig(prev => ({ ...prev, ...updates }));
+    // Sync language state if language was changed in config
+    if (updates.language) {
+      setCurrentLanguage(updates.language);
+    }
+  };
+
+  const handleLanguageChange = (lang: string) => {
+    setCurrentLanguage(lang);
+    setConfig(prev => ({ ...prev, language: lang }));
   };
 
   const handleOpenConfig = () => setShowConfigModal(true);
@@ -26,6 +36,8 @@ function Playground() {
         isInitialized={isInitialized}
         onInitialize={handleInitialize}
         onOpenConfig={handleOpenConfig}
+        currentLanguage={currentLanguage}
+        onLanguageChange={handleLanguageChange}
       />
       <WidgetContainer isVisible={showContainer} />
       <ConfigurationModal

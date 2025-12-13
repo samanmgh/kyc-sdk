@@ -1,2 +1,2 @@
-export { TextInput } from "./text-input.tsx";
-export type { TextInputProps } from "./text-input.types.ts";
+export { TextInput } from "./text-input";
+export type { TextInputProps } from "./text-input.types";

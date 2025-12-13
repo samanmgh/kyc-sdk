@@ -1,19 +1,55 @@
-import KYC_SDK from "../../index";
+import KYC_SDK, { getWidgetInstance } from "../../index";
 import { InitializeButton } from "./initialize-button";
 import { ConfigurationToggle } from "./configuration-toggle";
+import { AVAILABLE_LANGUAGES } from "../constants";
 
 interface PlaygroundHeaderProps {
   isInitialized: boolean;
   onInitialize: () => void;
   onOpenConfig: () => void;
+  currentLanguage: string;
+  onLanguageChange: (lang: string) => void;
 }
 
-export function PlaygroundHeader({ isInitialized, onInitialize, onOpenConfig }: PlaygroundHeaderProps) {
+export function PlaygroundHeader({
+  isInitialized,
+  onInitialize,
+  onOpenConfig,
+  currentLanguage,
+  onLanguageChange
+}: PlaygroundHeaderProps) {
+
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const lang = e.target.value;
+    onLanguageChange(lang);
+
+    // If SDK is initialized, call changeLanguage method
+    const instance = getWidgetInstance();
+    if (instance) {
+      instance.changeLanguage(lang);
+    }
+  };
+
   return (
     <div className="w-full bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex justify-between items-center mb-2">
         <h1 className="m-0 text-2xl font-bold">KYC SDK Development Playground</h1>
         <div className="flex gap-2 items-center">
+          {/* Runtime Language Switcher - only visible after init */}
+          {isInitialized && (
+            <select
+              value={currentLanguage}
+              onChange={handleLanguageChange}
+              className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:border-blue-500"
+              title="Change Language"
+            >
+              {AVAILABLE_LANGUAGES.map(lang => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+          )}
           <InitializeButton isInitialized={isInitialized} onInitialize={onInitialize} />
           <ConfigurationToggle onToggle={onOpenConfig} />
         </div>

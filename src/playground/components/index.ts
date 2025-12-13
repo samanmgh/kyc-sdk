@@ -4,3 +4,5 @@ export { ConfigurationModal } from "./configuration-modal";
 export { ConfigurationToggle } from "./configuration-toggle";
 export { InitializeButton } from "./initialize-button";
 export { Modal } from "./modal";
+export { ColorPicker } from "./color-picker";
+export { LanguageSelector } from "./language-selector";

@@ -1,2 +1,2 @@
-export * from './LanguageContext';
-export * from './ThemeContext';
+export * from "./language-context";
+export * from "./theme-context";

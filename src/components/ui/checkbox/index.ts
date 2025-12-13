@@ -1,2 +1,2 @@
-export { Checkbox } from "./checkbox.tsx";
-export type { CheckboxProps } from "./checkbox.types.ts";
+export { Checkbox } from "./checkbox";
+export type { CheckboxProps } from "./checkbox.types";

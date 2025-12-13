@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { TextInput, Button } from "./components/ui";
-import { useSDKConfig } from "./hooks";
+import { useSDKConfig, useTranslation } from "./hooks";
+import KYC_SDK from "./index";
 
 function Widget() {
   const { setTheme } = useSDKConfig();
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -12,11 +14,6 @@ function Widget() {
     const handleThemeChange = (event: Event) => {
       const { theme } = (event as CustomEvent).detail;
       setTheme(theme);
-    };
-
-    const handleLanguageChange = (event: Event) => {
-      const { lang, dir } = (event as CustomEvent).detail;
-      console.log("Language changed to:", lang, dir);
     };
 
     const handleDebugChange = (event: Event) => {
@@ -34,20 +31,18 @@ function Widget() {
     };
 
     window.addEventListener("widget-theme-change", handleThemeChange);
-    window.addEventListener("widget-language-change", handleLanguageChange);
     window.addEventListener("widget-debug-change", handleDebugChange);
     window.addEventListener("widget-user-data", handleUserData);
 
     return () => {
       window.removeEventListener("widget-theme-change", handleThemeChange);
-      window.removeEventListener("widget-language-change", handleLanguageChange);
       window.removeEventListener("widget-debug-change", handleDebugChange);
       window.removeEventListener("widget-user-data", handleUserData);
     };
   }, [setTheme]);
 
   const handleSubmit = () => {
-    alert(`Form submitted!\nName: ${firstName} ${lastName}\nEmail: ${email}`);
+    alert(t('alerts.formSubmitted', { firstName, lastName, email }));
   };
 
   const handleReset = () => {
@@ -71,7 +66,7 @@ function Widget() {
         style={{
           backgroundColor: "var(--background)",
           color: "var(--foreground)",
-          borderRadius: "12px",
+          borderRadius: "var(--radius)",
           boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
           padding: "2rem",
           maxWidth: "500px",
@@ -87,7 +82,7 @@ function Widget() {
             color: "var(--foreground)",
           }}
         >
-          KYC Verification
+          {t('kyc.title')}
         </h1>
         <p
           style={{
@@ -96,7 +91,7 @@ function Widget() {
             fontSize: "0.875rem",
           }}
         >
-          Please provide your information to continue
+          {t('kyc.subtitle')}
         </p>
 
         <div
@@ -108,9 +103,9 @@ function Widget() {
         >
           {/* First Name Input */}
           <TextInput
-            label='First Name'
+            label={t('kyc.form.firstName.label')}
             type='text'
-            placeholder='Enter your first name'
+            placeholder={t('kyc.form.firstName.placeholder')}
             value={firstName}
             onChange={e => setFirstName(e.target.value)}
             required
@@ -118,9 +113,9 @@ function Widget() {
 
           {/* Last Name Input */}
           <TextInput
-            label='Last Name'
+            label={t('kyc.form.lastName.label')}
             type='text'
-            placeholder='Enter your last name'
+            placeholder={t('kyc.form.lastName.placeholder')}
             value={lastName}
             onChange={e => setLastName(e.target.value)}
             required
@@ -128,13 +123,13 @@ function Widget() {
 
           {/* Email Input */}
           <TextInput
-            label='Email Address'
+            label={t('kyc.form.email.label')}
             type='email'
-            placeholder='Enter your email'
+            placeholder={t('kyc.form.email.placeholder')}
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
-            helperText="We'll never share your email"
+            helperText={t('kyc.form.email.helper')}
           />
 
           {/* Action Buttons */}
@@ -146,10 +141,10 @@ function Widget() {
             }}
           >
             <Button variant='primary' onClick={handleSubmit} fullWidth>
-              Submit
+              {t('common.submit')}
             </Button>
             <Button variant='outline' onClick={handleReset}>
-              Reset
+              {t('common.reset')}
             </Button>
           </div>
         </div>
@@ -164,7 +159,7 @@ function Widget() {
             textAlign: "center",
           }}
         >
-          Powered by KYC SDK v0.0.1
+          {t('kyc.footer', { version: KYC_SDK.version })}
         </div>
       </div>
     </div>

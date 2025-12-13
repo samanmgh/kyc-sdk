@@ -1,7 +1,26 @@
+export interface StyleConfig {
+    primary?: string;      // Primary color (OKLCH or hex)
+    radius?: string;       // Border radius (e.g., "0.5rem")
+    background?: string;   // Background color
+    foreground?: string;   // Text color
+    border?: string;       // Border color
+    secondary?: string;    // Secondary color
+    muted?: string;        // Muted color
+    destructive?: string;  // Destructive/error color
+}
+
+export interface TranslationConfig {
+    endpoint?: string;         // Base URL for fetching translations
+    defaultLanguage?: string;  // Default language code
+    fallbackLanguage?: string; // Fallback if requested language not found
+}
+
 export interface SDK_Config {
     apiKey: string;
     tenantId: number;
     debug?: boolean;
+    style?: StyleConfig;
+    translation?: TranslationConfig;
 }
 
 export interface UserData {
@@ -16,7 +35,7 @@ export interface UserData {
 
 export interface LanguageChangeResponse {
     success: boolean;
-    lang: 'en' | 'de';
+    lang: string;
     dir: 'ltr' | 'rtl';
 }
 
@@ -44,7 +63,7 @@ export interface UserDataResponse {
 
 export interface ConfigResponse {
     theme: 'light' | 'dark';
-    lang: 'en' | 'de';
+    lang: string;
     dir: 'ltr' | 'rtl';
     debug: boolean;
 }
@@ -56,7 +75,7 @@ export interface InitResponse {
 export interface SDKWidget {
     init(config: SDK_Config): Promise<InitResponse>;
 
-    changeLanguage(lang: 'en' | 'de'): Promise<LanguageChangeResponse>;
+    changeLanguage(lang: string): Promise<LanguageChangeResponse>;
 
     changeTheme(theme: 'light' | 'dark'): Promise<ThemeChangeResponse>;
 
@@ -66,7 +85,7 @@ export interface SDKWidget {
 
     getConfig(): Promise<ConfigResponse>;
 
-    lang?: 'en' | 'de';
+    lang?: string;
     theme: 'light' | 'dark';
     dir: 'ltr' | 'rtl';
 }
