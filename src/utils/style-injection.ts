@@ -54,3 +54,46 @@ export function dispatchStyleChange(styles: StyleConfig): void {
         }));
     }
 }
+
+const CUSTOM_CSS_ELEMENT_ID = 'kyc-sdk-custom-css';
+
+/**
+ * Injects raw CSS string into the document
+ * @param css - Raw CSS string to inject
+ * @param targetDocument - Document to inject into (defaults to window.document)
+ * @returns Cleanup function to remove injected styles
+ */
+export function injectCustomCSS(
+    css: string | undefined,
+    targetDocument: Document = document
+): () => void {
+    // Remove existing custom CSS
+    const existing = targetDocument.getElementById(CUSTOM_CSS_ELEMENT_ID);
+    if (existing) existing.remove();
+
+    if (!css?.trim()) return () => {};
+
+    // Create and inject style element
+    const style = targetDocument.createElement('style');
+    style.id = CUSTOM_CSS_ELEMENT_ID;
+    style.textContent = css;
+    targetDocument.head.appendChild(style);
+
+    // Return cleanup function
+    return () => {
+        const el = targetDocument.getElementById(CUSTOM_CSS_ELEMENT_ID);
+        if (el) el.remove();
+    };
+}
+
+/**
+ * Dispatches a custom event to notify widget of custom CSS changes
+ * @param css - Raw CSS string
+ */
+export function dispatchCustomCSSChange(css: string): void {
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('widget-custom-css-change', {
+            detail: { css }
+        }));
+    }
+}

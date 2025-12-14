@@ -22,6 +22,7 @@ export function useSDKInitialization() {
           tenantId: config.tenantId,
           debug: true,
           style: config.style,
+          customCSS: config.customCSS,
           translation: {
             ...config.translation,
             defaultLanguage: config.language || config.translation?.defaultLanguage || 'en',

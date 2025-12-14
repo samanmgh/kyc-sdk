@@ -6,4 +6,6 @@ export interface PlaygroundConfig {
   style?: StyleConfig;
   translation?: TranslationConfig;
   language?: string;
+  theme?: 'light' | 'dark';
+  customCSS?: string;
 }

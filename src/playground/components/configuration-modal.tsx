@@ -1,6 +1,7 @@
 import { Modal } from "./modal";
 import { ColorPicker } from "./color-picker";
 import { LanguageSelector } from "./language-selector";
+import { getWidgetInstance } from "../../index";
 import type { PlaygroundConfig } from "../types";
 
 interface ConfigurationModalProps {
@@ -19,9 +20,52 @@ export function ConfigurationModal({
   onConfigChange,
 }: ConfigurationModalProps) {
   const handleStyleChange = (styleUpdate: Partial<NonNullable<PlaygroundConfig['style']>>) => {
-    onConfigChange({
-      style: { ...config.style, ...styleUpdate }
-    });
+    const newStyles = { ...config.style, ...styleUpdate };
+    onConfigChange({ style: newStyles });
+
+    // If SDK is initialized, apply styles immediately
+    if (isInitialized) {
+      const instance = getWidgetInstance();
+      if (instance) {
+        instance.changeStyles(newStyles);
+      }
+    }
+  };
+
+  const handleLanguageChange = (language: string) => {
+    onConfigChange({ language });
+
+    // If SDK is initialized, change language immediately
+    if (isInitialized) {
+      const instance = getWidgetInstance();
+      if (instance) {
+        instance.changeLanguage(language);
+      }
+    }
+  };
+
+  const handleThemeChange = (theme: 'light' | 'dark') => {
+    onConfigChange({ theme });
+
+    // If SDK is initialized, change theme immediately
+    if (isInitialized) {
+      const instance = getWidgetInstance();
+      if (instance) {
+        instance.changeTheme(theme);
+      }
+    }
+  };
+
+  const handleCustomCSSChange = (customCSS: string) => {
+    onConfigChange({ customCSS });
+
+    // If SDK is initialized, apply custom CSS immediately
+    if (isInitialized) {
+      const instance = getWidgetInstance();
+      if (instance) {
+        instance.changeCustomCSS(customCSS);
+      }
+    }
   };
 
   return (
@@ -61,6 +105,18 @@ export function ConfigurationModal({
           Style Customization
         </h3>
 
+        <div className="mb-4">
+          <label className="block mb-2 text-sm font-semibold text-gray-700">Theme</label>
+          <select
+            value={config.theme || 'light'}
+            onChange={e => handleThemeChange(e.target.value as 'light' | 'dark')}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-blue-500"
+          >
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+
         <ColorPicker
           label="Primary Color"
           value={config.style?.primary || 'oklch(0.55 0.22 264)'}
@@ -79,6 +135,20 @@ export function ConfigurationModal({
             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm disabled:bg-gray-100 focus:outline-none focus:border-blue-500"
           />
         </div>
+
+        <div className="mb-4">
+          <label className="block mb-2 text-sm font-semibold text-gray-700">Custom CSS</label>
+          <textarea
+            value={config.customCSS || ''}
+            onChange={e => handleCustomCSSChange(e.target.value)}
+            placeholder=".my-button { color: red; }"
+            rows={4}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:outline-none focus:border-blue-500"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Raw CSS to inject. Overrides default widget styles.
+          </p>
+        </div>
       </div>
 
       {/* Language Section */}
@@ -90,7 +160,7 @@ export function ConfigurationModal({
         <LanguageSelector
           label="Default Language"
           value={config.language || 'en'}
-          onChange={language => onConfigChange({ language })}
+          onChange={handleLanguageChange}
           disabled={false}
         />
 

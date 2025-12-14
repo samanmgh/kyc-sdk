@@ -4,11 +4,19 @@ import { createRoot } from "react-dom/client";
 import { LanguageProvider, ThemeProvider } from "./provider";
 import type { SDK_Config } from "./types";
 import themeStyles from "./styles/theme.scss?raw";
-import { injectCustomStyles } from "./utils/style-injection";
+import { injectCustomStyles, injectCustomCSS } from "./utils/style-injection";
+import { isWidgetInitialized, markWidgetInitialized } from "./utils/widget-state";
 import "./index.css";
-import Widget from "./Widget";
+import Widget from "./widget";
 
 export function InitializeWidget(config: SDK_Config, containerSelector?: string) {
+  if (isWidgetInitialized()) {
+    console.warn("[KYC_SDK] Widget already initialized. Skipping duplicate initialization.");
+    return;
+  }
+
+  markWidgetInitialized();
+
   const { apiKey, tenantId, style, translation } = config;
 
   if (!localStorage.getItem("apiKey")) {
@@ -38,11 +46,21 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
       injectCustomStyles(style, document);
     }
 
+    if (config.customCSS) {
+      injectCustomCSS(config.customCSS, document);
+    }
+
     const handleStyleChange = (event: Event) => {
       const { styles } = (event as CustomEvent).detail;
       injectCustomStyles(styles, document);
     };
     window.addEventListener("widget-style-change", handleStyleChange);
+
+    const handleCustomCSSChange = (event: Event) => {
+      const { css } = (event as CustomEvent).detail;
+      injectCustomCSS(css, document);
+    };
+    window.addEventListener("widget-custom-css-change", handleCustomCSSChange);
 
     const root = createRoot(inlineContainer);
     root.render(
@@ -85,11 +103,38 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
       injectCustomStyles(style, iframeDoc);
     }
 
+    if (config.customCSS) {
+      injectCustomCSS(config.customCSS, iframeDoc);
+    }
+
+    const BRIDGED_EVENTS = [
+      "widget-theme-change",
+      "widget-language-change",
+      "widget-style-change",
+      "widget-custom-css-change",
+      "widget-debug-change",
+      "widget-user-data",
+    ];
+
+    BRIDGED_EVENTS.forEach(eventName => {
+      window.addEventListener(eventName, (event: Event) => {
+        iframe.contentWindow?.dispatchEvent(
+          new CustomEvent(eventName, { detail: (event as CustomEvent).detail })
+        );
+      });
+    });
+
     const handleStyleChange = (event: Event) => {
       const { styles } = (event as CustomEvent).detail;
       injectCustomStyles(styles, iframeDoc);
     };
-    window.addEventListener("widget-style-change", handleStyleChange);
+    iframe.contentWindow?.addEventListener("widget-style-change", handleStyleChange);
+
+    const handleCustomCSSChange = (event: Event) => {
+      const { css } = (event as CustomEvent).detail;
+      injectCustomCSS(css, iframeDoc);
+    };
+    iframe.contentWindow?.addEventListener("widget-custom-css-change", handleCustomCSSChange);
 
     const container = iframeDoc.createElement("div");
     container.id = "widget-container";

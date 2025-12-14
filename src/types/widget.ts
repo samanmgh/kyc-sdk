@@ -21,6 +21,34 @@ export interface SDK_Config {
     debug?: boolean;
     style?: StyleConfig;
     translation?: TranslationConfig;
+    customCSS?: string;  // Raw CSS string to inject for custom styling
+    autoSyncTheme?: boolean;  // Auto-sync theme with host app changes (default: true)
+}
+
+/**
+ * Unified configuration interface for the KYC SDK
+ * Use with createKYCWidget() initializer function
+ */
+export interface KYCConfig {
+    // Required
+    apiKey: string;
+    tenantId: number;
+
+    // Optional
+    debug?: boolean;
+
+    // Style configuration
+    style?: StyleConfig;
+    customCSS?: string;  // Raw CSS string to inject
+
+    // Translation configuration
+    translation?: TranslationConfig;
+
+    // Container selector (if provided, renders inline; otherwise iframe)
+    container?: string;
+
+    // Auto-sync theme with host app changes (default: true)
+    autoSyncTheme?: boolean;
 }
 
 export interface UserData {
@@ -70,6 +98,11 @@ export interface ConfigResponse {
 
 export interface InitResponse {
     ok: boolean;
+}
+
+export interface CustomCSSChangeResponse {
+    success: boolean;
+    css: string;
 }
 
 export interface SDKWidget {

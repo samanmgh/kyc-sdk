@@ -45,13 +45,21 @@ export default defineConfig(({ mode }) => {
             },
           },
           rollupOptions: {
-            external: ["react", "react-dom", "react/jsx-runtime"],
+            external: [
+              "react",
+              "react-dom",
+              "react-dom/client",
+              "react/jsx-runtime",
+              "react/jsx-dev-runtime",
+            ],
             output: {
               exports: "named" as const,
               globals: {
                 react: "React",
                 "react-dom": "ReactDOM",
+                "react-dom/client": "ReactDOM",
                 "react/jsx-runtime": "jsxRuntime",
+                "react/jsx-dev-runtime": "jsxRuntime",
               },
               assetFileNames: assetInfo => {
                 if (assetInfo.name && assetInfo.name.endsWith(".css")) return "index.css";

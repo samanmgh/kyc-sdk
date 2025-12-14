@@ -80,6 +80,16 @@ export function ThemeProvider({
     setTheme(theme === "dark" ? "light" : "dark");
   }, [theme, setTheme]);
 
+  // Listen for theme change events from SDK
+  useEffect(() => {
+    const handleThemeChange = (event: Event) => {
+      const { theme: newTheme } = (event as CustomEvent).detail;
+      setTheme(newTheme);
+    };
+    window.addEventListener("widget-theme-change", handleThemeChange);
+    return () => window.removeEventListener("widget-theme-change", handleThemeChange);
+  }, [setTheme]);
+
   useEffect(() => {
     if (config.debug) {
       console.log("[KYC SDK] Provider initialized", {
