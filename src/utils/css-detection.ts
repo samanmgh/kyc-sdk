@@ -26,7 +26,7 @@ export function getMissingCSSVars(): string[] {
 }
 
 export const DEFAULT_LIGHT_VARS: Record<string, string> = {
-  "--background": "oklch(1 0 0)",
+  "--background": "#ffffff",
   "--foreground": "oklch(0.2 0 0)",
   "--card": "oklch(1 0 0)",
   "--card-foreground": "oklch(0.2 0 0)",
@@ -49,7 +49,7 @@ export const DEFAULT_LIGHT_VARS: Record<string, string> = {
 };
 
 export const DEFAULT_DARK_VARS: Record<string, string> = {
-  "--background": "oklch(0.2 0 0)",
+  "--background": "#000000",
   "--foreground": "oklch(0.97 0 0)",
   "--card": "oklch(0.25 0 0)",
   "--card-foreground": "oklch(0.97 0 0)",
@@ -73,7 +73,6 @@ export const DEFAULT_DARK_VARS: Record<string, string> = {
 
 export function injectFallbackCSS(theme: "light" | "dark"): () => void {
   if (typeof window === "undefined") return () => {};
-  if (hasParentTheme()) return () => {};
 
   const vars = theme === "dark" ? DEFAULT_DARK_VARS : DEFAULT_LIGHT_VARS;
   const styleId = "kyc-sdk-fallback-vars";

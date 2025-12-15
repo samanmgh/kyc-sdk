@@ -9,7 +9,7 @@ import "./index.css";
 function Playground() {
   const [config, setConfig] = useState<PlaygroundConfig>(DEFAULT_CONFIG);
   const [showConfigModal, setShowConfigModal] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState(config.language || 'en');
+  const [currentLanguage, setCurrentLanguage] = useState<'en' | 'de'>(config.language || 'en');
   const { isInitialized, showContainer, initialize } = useSDKInitialization();
 
   const handleInitialize = () => initialize(config);
@@ -22,7 +22,7 @@ function Playground() {
     }
   };
 
-  const handleLanguageChange = (lang: string) => {
+  const handleLanguageChange = (lang: 'en' | 'de') => {
     setCurrentLanguage(lang);
     setConfig(prev => ({ ...prev, language: lang }));
   };

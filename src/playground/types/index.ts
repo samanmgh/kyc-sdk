@@ -1,11 +1,9 @@
-import type { StyleConfig, TranslationConfig } from '../../types';
+import type { StyleConfig } from '../../types';
 
 export interface PlaygroundConfig {
   apiKey: string;
   tenantId: number;
-  style?: StyleConfig;
-  translation?: TranslationConfig;
-  language?: string;
+  styles?: StyleConfig;
+  language?: 'en' | 'de';
   theme?: 'light' | 'dark';
-  customCSS?: string;
 }

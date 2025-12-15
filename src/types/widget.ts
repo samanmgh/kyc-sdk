@@ -9,20 +9,13 @@ export interface StyleConfig {
     destructive?: string;  // Destructive/error color
 }
 
-export interface TranslationConfig {
-    endpoint?: string;         // Base URL for fetching translations
-    defaultLanguage?: string;  // Default language code
-    fallbackLanguage?: string; // Fallback if requested language not found
-}
-
 export interface SDK_Config {
     apiKey: string;
     tenantId: number;
-    debug?: boolean;
-    style?: StyleConfig;
-    translation?: TranslationConfig;
-    customCSS?: string;  // Raw CSS string to inject for custom styling
-    autoSyncTheme?: boolean;  // Auto-sync theme with host app changes (default: true)
+    debug?: boolean;           // default: false
+    theme?: 'light' | 'dark';  // default: 'dark'
+    language?: 'en' | 'de';    // default: 'en'
+    styles?: StyleConfig;
 }
 
 /**
@@ -36,35 +29,19 @@ export interface KYCConfig {
 
     // Optional
     debug?: boolean;
+    theme?: 'light' | 'dark';
+    language?: 'en' | 'de';
 
     // Style configuration
-    style?: StyleConfig;
-    customCSS?: string;  // Raw CSS string to inject
-
-    // Translation configuration
-    translation?: TranslationConfig;
+    styles?: StyleConfig;
 
     // Container selector (if provided, renders inline; otherwise iframe)
     container?: string;
-
-    // Auto-sync theme with host app changes (default: true)
-    autoSyncTheme?: boolean;
-}
-
-export interface UserData {
-    firstName: string;
-    lastName: string;
-    email?: string;
-    phone?: string;
-    userRefId: string;
-
-    [key: string]: unknown;
 }
 
 export interface LanguageChangeResponse {
     success: boolean;
-    lang: string;
-    dir: 'ltr' | 'rtl';
+    lang: 'en' | 'de';
 }
 
 export interface ThemeChangeResponse {
@@ -72,53 +49,11 @@ export interface ThemeChangeResponse {
     theme: 'light' | 'dark';
 }
 
-export interface DebugChangeResponse {
-    success: boolean;
-    debug: boolean;
-}
-
-export interface UserDataResponse {
-    success: boolean;
-    userData: {
-        firstName: string;
-        lastName: string;
-        userRefId: string;
-        email?: string;
-        phone?: string;
-        [key: string]: unknown;
-    };
-}
-
-export interface ConfigResponse {
-    theme: 'light' | 'dark';
-    lang: string;
-    dir: 'ltr' | 'rtl';
-    debug: boolean;
-}
-
 export interface InitResponse {
     ok: boolean;
 }
 
-export interface CustomCSSChangeResponse {
+export interface StyleChangeResponse {
     success: boolean;
-    css: string;
-}
-
-export interface SDKWidget {
-    init(config: SDK_Config): Promise<InitResponse>;
-
-    changeLanguage(lang: string): Promise<LanguageChangeResponse>;
-
-    changeTheme(theme: 'light' | 'dark'): Promise<ThemeChangeResponse>;
-
-    setDebug(enabled: boolean): Promise<DebugChangeResponse>;
-
-    sendUserData(userData: UserData): Promise<UserDataResponse>;
-
-    getConfig(): Promise<ConfigResponse>;
-
-    lang?: string;
-    theme: 'light' | 'dark';
-    dir: 'ltr' | 'rtl';
+    styles: StyleConfig;
 }

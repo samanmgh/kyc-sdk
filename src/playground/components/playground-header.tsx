@@ -1,14 +1,18 @@
 import KYC_SDK, { getWidgetInstance } from "../../index";
 import { InitializeButton } from "./initialize-button";
 import { ConfigurationToggle } from "./configuration-toggle";
-import { AVAILABLE_LANGUAGES } from "../constants";
+
+const AVAILABLE_LANGUAGES = [
+  { code: 'en' as const, name: 'English' },
+  { code: 'de' as const, name: 'German' },
+];
 
 interface PlaygroundHeaderProps {
   isInitialized: boolean;
   onInitialize: () => void;
   onOpenConfig: () => void;
-  currentLanguage: string;
-  onLanguageChange: (lang: string) => void;
+  currentLanguage: 'en' | 'de';
+  onLanguageChange: (lang: 'en' | 'de') => void;
 }
 
 export function PlaygroundHeader({
@@ -20,7 +24,7 @@ export function PlaygroundHeader({
 }: PlaygroundHeaderProps) {
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const lang = e.target.value;
+    const lang = e.target.value as 'en' | 'de';
     onLanguageChange(lang);
 
     // If SDK is initialized, call changeLanguage method

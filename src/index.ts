@@ -2,28 +2,17 @@ import type {
   SDK_Config,
   KYCConfig,
   StyleConfig,
-  TranslationConfig,
-  UserData,
   LanguageChangeResponse,
   ThemeChangeResponse,
-  DebugChangeResponse,
-  UserDataResponse,
-  ConfigResponse,
   InitResponse,
-  CustomCSSChangeResponse,
+  StyleChangeResponse,
 } from "./types";
 import { InitializeWidget } from "./main";
 import { resetWidgetState } from "./utils/widget-state";
-import { dispatchStyleChange, dispatchCustomCSSChange } from "./utils/style-injection";
-import { getDirectionFromLanguage } from "./utils/rtl-detection";
-import { detectHostTheme, watchHostThemeChanges } from "./utils/theme-detection";
+import { dispatchStyleChange } from "./utils/style-injection";
+import { watchHostThemeChanges, watchHostLanguageChanges } from "./utils/theme-detection";
 
 let widgetInstance: KYC_SDK | null = null;
-
-export interface StyleChangeResponse {
-  success: boolean;
-  styles: StyleConfig;
-}
 
 export class KYC_SDK {
   static version = "0.0.1";
@@ -31,40 +20,33 @@ export class KYC_SDK {
   private apiKey: string;
   private tenantId: number;
   private debug: boolean;
-  private currentTheme: "light" | "dark" = "light";
-  private currentLang: string = "en";
-  private currentDir: "ltr" | "rtl" = "ltr";
+  private currentTheme: "light" | "dark" = "dark";
+  private currentLang: "en" | "de" = "en";
   private styles: StyleConfig = {};
-  private customCSS: string = "";
-  private translationConfig: TranslationConfig = {};
   private themeWatcherCleanup: (() => void) | null = null;
-  private autoSyncTheme: boolean = true;
+  private languageWatcherCleanup: (() => void) | null = null;
 
   constructor(options: SDK_Config) {
     this.apiKey = options.apiKey;
     this.tenantId = options.tenantId;
-    this.debug = !!options.debug;
-    this.styles = options.style || {};
-    this.customCSS = options.customCSS || "";
-    this.translationConfig = options.translation || {};
-    this.currentLang = options.translation?.defaultLanguage || "en";
-    this.currentDir = getDirectionFromLanguage(this.currentLang);
-    this.autoSyncTheme = options.autoSyncTheme !== false;
-    this.currentTheme = detectHostTheme();
+    this.debug = options.debug ?? false;
+    this.currentTheme = options.theme ?? "dark";
+    this.currentLang = options.language ?? "en";
+    this.styles = options.styles ?? {};
 
-    if (this.debug) this.log("KYC_SDK constructed", options, "detected theme:", this.currentTheme);
+    if (this.debug) this.log("KYC_SDK constructed", options);
   }
 
   public init(containerSelector?: string): Promise<InitResponse> {
-    this.log("KYC_SDK initialized", this.apiKey);
+    if (this.debug) this.log("KYC_SDK initialized");
 
     const config: SDK_Config = {
       apiKey: this.apiKey,
       tenantId: this.tenantId,
       debug: this.debug,
-      style: this.styles,
-      customCSS: this.customCSS,
-      translation: this.translationConfig,
+      theme: this.currentTheme,
+      language: this.currentLang,
+      styles: this.styles,
     };
 
     InitializeWidget(config, containerSelector);
@@ -72,9 +54,9 @@ export class KYC_SDK {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     widgetInstance = this;
 
-    if (this.autoSyncTheme) {
-      this.startThemeWatcher();
-    }
+    // Start watchers for reactive updates
+    this.startThemeWatcher();
+    this.startLanguageWatcher();
 
     return Promise.resolve({ ok: true });
   }
@@ -83,33 +65,41 @@ export class KYC_SDK {
     this.stopThemeWatcher();
 
     this.themeWatcherCleanup = watchHostThemeChanges(newTheme => {
-      this.log("Host theme changed to", newTheme);
+      if (this.debug) this.log("Host theme changed to", newTheme);
       this.changeTheme(newTheme);
     });
 
-    this.log("Theme watcher started");
+    if (this.debug) this.log("Theme watcher started");
   }
 
   private stopThemeWatcher(): void {
     if (this.themeWatcherCleanup) {
       this.themeWatcherCleanup();
       this.themeWatcherCleanup = null;
-      this.log("Theme watcher stopped");
     }
   }
 
-  public setAutoSyncTheme(enabled: boolean): void {
-    this.autoSyncTheme = enabled;
-    if (enabled) {
-      this.startThemeWatcher();
-    } else {
-      this.stopThemeWatcher();
+  private startLanguageWatcher(): void {
+    this.stopLanguageWatcher();
+
+    this.languageWatcherCleanup = watchHostLanguageChanges(newLang => {
+      if (this.debug) this.log("Host language changed to", newLang);
+      this.changeLanguage(newLang);
+    });
+
+    if (this.debug) this.log("Language watcher started");
+  }
+
+  private stopLanguageWatcher(): void {
+    if (this.languageWatcherCleanup) {
+      this.languageWatcherCleanup();
+      this.languageWatcherCleanup = null;
     }
-    this.log("Auto sync theme", enabled ? "enabled" : "disabled");
   }
 
   public destroy(): void {
     this.stopThemeWatcher();
+    this.stopLanguageWatcher();
 
     const inlineContainer = document.getElementById("widget-inline-container");
     if (inlineContainer) {
@@ -124,7 +114,7 @@ export class KYC_SDK {
     resetWidgetState();
     widgetInstance = null;
 
-    this.log("KYC_SDK destroyed");
+    if (this.debug) this.log("KYC_SDK destroyed");
   }
 
   public changeStyles(styles: StyleConfig): Promise<StyleChangeResponse> {
@@ -138,29 +128,23 @@ export class KYC_SDK {
     });
   }
 
-  public changeCustomCSS(css: string): Promise<CustomCSSChangeResponse> {
-    this.customCSS = css;
+  public changeLanguage(lang: "en" | "de"): Promise<LanguageChangeResponse> {
+    // Skip if language is already the same
+    if (lang === this.currentLang) {
+      return Promise.resolve({
+        success: true,
+        lang: this.currentLang,
+      });
+    }
 
-    this.log("Custom CSS changed");
-
-    dispatchCustomCSSChange(css);
-
-    return Promise.resolve({
-      success: true,
-      css: this.customCSS,
-    });
-  }
-
-  public changeLanguage(lang: string): Promise<LanguageChangeResponse> {
     this.currentLang = lang;
-    this.currentDir = getDirectionFromLanguage(lang);
 
-    this.log("Language changed to", lang, "dir:", this.currentDir);
+    if (this.debug) this.log("Language changed to", lang);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("widget-language-change", {
-          detail: { lang, dir: this.currentDir },
+          detail: { lang },
         })
       );
     }
@@ -168,14 +152,21 @@ export class KYC_SDK {
     return Promise.resolve({
       success: true,
       lang: this.currentLang,
-      dir: this.currentDir,
     });
   }
 
   public changeTheme(theme: "light" | "dark"): Promise<ThemeChangeResponse> {
+    // Skip if theme is already the same
+    if (theme === this.currentTheme) {
+      return Promise.resolve({
+        success: true,
+        theme: this.currentTheme,
+      });
+    }
+
     this.currentTheme = theme;
 
-    this.log("Theme changed to", theme);
+    if (this.debug) this.log("Theme changed to", theme);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(
@@ -188,55 +179,6 @@ export class KYC_SDK {
     return Promise.resolve({
       success: true,
       theme: this.currentTheme,
-    });
-  }
-
-  public setDebug(enabled: boolean): Promise<DebugChangeResponse> {
-    this.debug = enabled;
-
-    this.log("Debug mode", enabled ? "enabled" : "disabled");
-
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(
-        new CustomEvent("widget-debug-change", {
-          detail: { debug: this.debug },
-        })
-      );
-    }
-
-    return Promise.resolve({
-      success: true,
-      debug: this.debug,
-    });
-  }
-
-  public sendUserData(userData: UserData): Promise<UserDataResponse> {
-    this.log("User data received", userData);
-
-    const userInfo = {
-      ...userData,
-    };
-
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(
-        new CustomEvent("widget-user-data", {
-          detail: { userData: userInfo },
-        })
-      );
-    }
-
-    return Promise.resolve({
-      success: true,
-      userData: userInfo,
-    });
-  }
-
-  public getConfig(): Promise<ConfigResponse> {
-    return Promise.resolve({
-      theme: this.currentTheme,
-      lang: this.currentLang,
-      dir: this.currentDir,
-      debug: this.debug,
     });
   }
 
@@ -256,10 +198,9 @@ export async function createKYCWidget(config: KYCConfig): Promise<KYC_SDK> {
     apiKey: config.apiKey,
     tenantId: config.tenantId,
     debug: config.debug,
-    style: config.style,
-    customCSS: config.customCSS,
-    translation: config.translation,
-    autoSyncTheme: config.autoSyncTheme,
+    theme: config.theme,
+    language: config.language,
+    styles: config.styles,
   });
 
   await sdk.init(config.container);
@@ -271,15 +212,10 @@ export default KYC_SDK;
 
 export type {
   StyleConfig,
-  TranslationConfig,
-  UserData,
   SDK_Config,
   KYCConfig,
   LanguageChangeResponse,
   ThemeChangeResponse,
-  DebugChangeResponse,
-  UserDataResponse,
-  ConfigResponse,
   InitResponse,
-  CustomCSSChangeResponse,
+  StyleChangeResponse,
 } from "./types";

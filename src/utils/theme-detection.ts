@@ -1,74 +1,52 @@
 /**
- * Theme detection utility
- * Detects the current theme from the host application
+ * Theme and language detection utilities
+ * Watches for theme and language changes in the host application
  */
 
 type Theme = 'light' | 'dark';
-
-/**
- * Detects the current theme from the document
- * Checks multiple sources in order of priority:
- * 1. Document element class (dark/light)
- * 2. Document element data-theme attribute
- * 3. Document element data-mode attribute
- * 4. Body class (dark/light)
- * 5. System preference (prefers-color-scheme)
- */
-export function detectHostTheme(): Theme {
-  if (typeof window === 'undefined') return 'light';
-
-  // Check document element class
-  const docClasses = document.documentElement.classList;
-  if (docClasses.contains('dark')) return 'dark';
-  if (docClasses.contains('light')) return 'light';
-
-  // Check data-theme attribute (common in Next.js themes)
-  const dataTheme = document.documentElement.getAttribute('data-theme');
-  if (dataTheme === 'dark') return 'dark';
-  if (dataTheme === 'light') return 'light';
-
-  // Check data-mode attribute
-  const dataMode = document.documentElement.getAttribute('data-mode');
-  if (dataMode === 'dark') return 'dark';
-  if (dataMode === 'light') return 'light';
-
-  // Check body class
-  const bodyClasses = document.body?.classList;
-  if (bodyClasses?.contains('dark')) return 'dark';
-  if (bodyClasses?.contains('light')) return 'light';
-
-  // Check color-scheme style property
-  const colorScheme = getComputedStyle(document.documentElement).colorScheme;
-  if (colorScheme === 'dark') return 'dark';
-  if (colorScheme === 'light') return 'light';
-
-  // Fallback to system preference
-  return getSystemTheme();
-}
-
-/**
- * Gets the system color scheme preference
- */
-export function getSystemTheme(): Theme {
-  if (typeof window === 'undefined') return 'light';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
+type Language = 'en' | 'de';
 
 /**
  * Watches for theme changes in the host application
- * Monitors: document class changes, data-theme/data-mode attributes, and system preference
+ * Monitors: document class changes, data-theme/data-mode attributes
  * @param callback - Function to call when theme changes
  * @returns Cleanup function to stop watching
  */
 export function watchHostThemeChanges(callback: (theme: Theme) => void): () => void {
   if (typeof window === 'undefined') return () => {};
 
-  let currentTheme = detectHostTheme();
+  let currentTheme: Theme | null = null;
+
+  const detectTheme = (): Theme | null => {
+    // Check document element class
+    const docClasses = document.documentElement.classList;
+    if (docClasses.contains('dark')) return 'dark';
+    if (docClasses.contains('light')) return 'light';
+
+    // Check data-theme attribute (common in Next.js themes)
+    const dataTheme = document.documentElement.getAttribute('data-theme');
+    if (dataTheme === 'dark' || dataTheme === 'light') return dataTheme;
+
+    // Check data-mode attribute
+    const dataMode = document.documentElement.getAttribute('data-mode');
+    if (dataMode === 'dark' || dataMode === 'light') return dataMode;
+
+    // Check body class
+    const bodyClasses = document.body?.classList;
+    if (bodyClasses?.contains('dark')) return 'dark';
+    if (bodyClasses?.contains('light')) return 'light';
+
+    return null;
+  };
+
+  // Initialize current theme
+  currentTheme = detectTheme();
 
   // Watch for class and attribute changes on document element
   const observer = new MutationObserver(() => {
-    const newTheme = detectHostTheme();
-    if (newTheme !== currentTheme) {
+    const newTheme = detectTheme();
+    // Only call callback if theme actually changed
+    if (newTheme && newTheme !== currentTheme) {
       currentTheme = newTheme;
       callback(newTheme);
     }
@@ -76,7 +54,7 @@ export function watchHostThemeChanges(callback: (theme: Theme) => void): () => v
 
   observer.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ['class', 'data-theme', 'data-mode', 'style'],
+    attributeFilter: ['class', 'data-theme', 'data-mode'],
   });
 
   // Also watch body for class changes
@@ -87,21 +65,45 @@ export function watchHostThemeChanges(callback: (theme: Theme) => void): () => v
     });
   }
 
-  // Watch for system preference changes
-  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-  const handleMediaChange = () => {
-    const newTheme = detectHostTheme();
-    if (newTheme !== currentTheme) {
-      currentTheme = newTheme;
-      callback(newTheme);
-    }
+  // Return cleanup function
+  return () => {
+    observer.disconnect();
   };
+}
 
-  mediaQuery.addEventListener('change', handleMediaChange);
+/**
+ * Watches for language changes in the host application
+ * Monitors: lang attribute on document element
+ * @param callback - Function to call when language changes to 'en' or 'de'
+ * @returns Cleanup function to stop watching
+ */
+export function watchHostLanguageChanges(callback: (lang: Language) => void): () => void {
+  if (typeof window === 'undefined') return () => {};
+
+  let currentLang: Language | null = null;
+
+  // Initialize current language
+  const initialLang = document.documentElement.getAttribute('lang');
+  if (initialLang === 'en' || initialLang === 'de') {
+    currentLang = initialLang;
+  }
+
+  const observer = new MutationObserver(() => {
+    const lang = document.documentElement.getAttribute('lang');
+    // Only call callback if language actually changed
+    if ((lang === 'en' || lang === 'de') && lang !== currentLang) {
+      currentLang = lang;
+      callback(lang);
+    }
+  });
+
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['lang'],
+  });
 
   // Return cleanup function
   return () => {
     observer.disconnect();
-    mediaQuery.removeEventListener('change', handleMediaChange);
   };
 }

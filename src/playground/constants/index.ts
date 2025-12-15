@@ -3,23 +3,15 @@ import type { PlaygroundConfig } from '../types';
 export const DEFAULT_CONFIG: PlaygroundConfig = {
   apiKey: "test-api-key-12345",
   tenantId: 123,
-  style: {
+  styles: {
     primary: "oklch(0.55 0.22 264)",
     radius: "0.625rem",
   },
-  translation: {
-    defaultLanguage: 'en',
-    fallbackLanguage: 'en',
-  },
   language: 'en',
+  theme: 'dark',
 };
 
 export const INIT_DELAY_MS = 100;
-
-export const AVAILABLE_LANGUAGES = [
-  { code: 'en', name: 'English' },
-  { code: 'de', name: 'Deutsch' },
-] as const;
 
 export const PRESET_COLORS = [
   { name: 'Blue', value: 'oklch(0.55 0.22 264)' },

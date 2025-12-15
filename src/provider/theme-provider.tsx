@@ -1,67 +1,33 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { ThemeContext } from "./context";
-import { hasParentTheme, injectFallbackCSS } from "../utils";
+import { injectFallbackCSS } from "../utils";
 import type { KYCSDKProviderProps, SDKConfig, Theme } from "../types";
 
-function getSystemTheme(): Theme {
-  if (typeof window === "undefined") return "light";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
-function getDocumentTheme(): Theme {
-  if (typeof window === "undefined") return "light";
-  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+interface ThemeProviderProps extends KYCSDKProviderProps {
+  initialTheme?: Theme;
 }
 
 export function ThemeProvider({
   children,
   config = {},
+  initialTheme = "dark",
   theme: controlledTheme,
   setTheme: controlledSetTheme,
-}: KYCSDKProviderProps) {
+}: ThemeProviderProps) {
   const isControlled = controlledTheme !== undefined;
 
-  const [parentHasTheme] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    const hasTheme = hasParentTheme();
-    if (config.debug) {
-      console.log("[KYC SDK] Parent theme detection:", {
-        hasParentTheme: hasTheme,
-        willInjectFallback: !hasTheme,
-      });
-    }
-    return hasTheme;
-  });
-
-  const [internalTheme, setInternalTheme] = useState<Theme>(() => {
-    const docTheme = getDocumentTheme();
-    if (docTheme === "dark") return "dark";
-    return getSystemTheme();
-  });
+  const [internalTheme, setInternalTheme] = useState<Theme>(initialTheme);
 
   const theme = isControlled ? controlledTheme : internalTheme;
 
+  // Inject CSS variables whenever theme changes
   useEffect(() => {
-    if (parentHasTheme) return;
     const cleanup = injectFallbackCSS(theme);
     if (config.debug) {
-      console.log("[KYC SDK] Injected fallback CSS for theme:", theme);
+      console.log("[KYC SDK] Injected CSS for theme:", theme);
     }
     return cleanup;
-  }, [parentHasTheme, theme, config.debug]);
-
-  useEffect(() => {
-    if (isControlled) return;
-    const observer = new MutationObserver(() => {
-      const docTheme = getDocumentTheme();
-      setInternalTheme(docTheme);
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-    return () => observer.disconnect();
-  }, [isControlled]);
+  }, [theme, config.debug]);
 
   const setTheme = useCallback(
     (newTheme: Theme) => {
@@ -95,11 +61,10 @@ export function ThemeProvider({
       console.log("[KYC SDK] Provider initialized", {
         theme,
         isControlled,
-        parentHasTheme,
         config,
       });
     }
-  }, [theme, isControlled, parentHasTheme, config]);
+  }, [theme, isControlled, config]);
 
   const contextValue = useMemo(
     () => ({

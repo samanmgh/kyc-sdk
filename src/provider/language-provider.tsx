@@ -1,56 +1,33 @@
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
-import type { Language, Translation, TranslationConfig } from "../types";
+import type { Language, Translation } from "../types";
 import { LanguageContext } from "./context";
-import { fetchTranslation } from '../utils/translation-fetcher';
-import enLang from '../translations/en.json';
+import { getTranslation } from '../utils/translation-fetcher';
 
 interface LanguageProviderProps {
     children: ReactNode;
-    translationConfig?: TranslationConfig;
     initialLanguage?: Language;
 }
 
 export function LanguageProvider({
     children,
-    translationConfig,
     initialLanguage = 'en'
 }: LanguageProviderProps) {
     const [language, setLanguage] = useState<Language>(initialLanguage);
-    const [dictionary, setDictionary] = useState<Translation>(enLang as Translation);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [dictionary, setDictionary] = useState<Translation>(() => getTranslation(initialLanguage));
 
-    // Load initial/default language
-    useEffect(() => {
-        const loadInitialLanguage = async () => {
-            setIsLoading(true);
-            const result = await fetchTranslation(initialLanguage, translationConfig);
-            setDictionary(result.translation);
-            if (result.error) setError(result.error);
-            setIsLoading(false);
-        };
-        loadInitialLanguage();
-    }, [initialLanguage, translationConfig]);
-
-    const changeLanguage = useCallback(async (lang: Language) => {
+    const changeLanguage = useCallback((lang: Language) => {
         if (lang === language) return;
-
-        setIsLoading(true);
-        setError(null);
-
-        const result = await fetchTranslation(lang, translationConfig);
-
         setLanguage(lang);
-        setDictionary(result.translation);
-        if (result.error) setError(result.error);
-        setIsLoading(false);
-    }, [language, translationConfig]);
+        setDictionary(getTranslation(lang));
+    }, [language]);
 
     // Listen for external language change events from SDK
     useEffect(() => {
-        const handleLanguageChange = async (event: Event) => {
+        const handleLanguageChange = (event: Event) => {
             const { lang } = (event as CustomEvent).detail;
-            await changeLanguage(lang);
+            if (lang === 'en' || lang === 'de') {
+                changeLanguage(lang);
+            }
         };
 
         window.addEventListener('widget-language-change', handleLanguageChange);
@@ -64,8 +41,6 @@ export function LanguageProvider({
             dictionary,
             language,
             changeLanguage,
-            isLoading,
-            error
         }}>
             {children}
         </LanguageContext.Provider>

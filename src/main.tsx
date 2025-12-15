@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { LanguageProvider, ThemeProvider } from "./provider";
 import type { SDK_Config } from "./types";
 import themeStyles from "./styles/theme.scss?raw";
-import { injectCustomStyles, injectCustomCSS } from "./utils/style-injection";
+import { injectCustomStyles } from "./utils/style-injection";
 import { isWidgetInitialized, markWidgetInitialized } from "./utils/widget-state";
 import "./index.css";
 import Widget from "./widget";
@@ -17,7 +17,7 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
 
   markWidgetInitialized();
 
-  const { apiKey, tenantId, style, translation } = config;
+  const { apiKey, tenantId, styles, theme, language } = config;
 
   if (!localStorage.getItem("apiKey")) {
     localStorage.setItem("apiKey", apiKey);
@@ -42,34 +42,21 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
     themeStyle.textContent = themeStyles;
     document.head.appendChild(themeStyle);
 
-    if (style) {
-      injectCustomStyles(style, document);
-    }
-
-    if (config.customCSS) {
-      injectCustomCSS(config.customCSS, document);
+    if (styles) {
+      injectCustomStyles(styles, document);
     }
 
     const handleStyleChange = (event: Event) => {
-      const { styles } = (event as CustomEvent).detail;
-      injectCustomStyles(styles, document);
+      const { styles: newStyles } = (event as CustomEvent).detail;
+      injectCustomStyles(newStyles, document);
     };
     window.addEventListener("widget-style-change", handleStyleChange);
-
-    const handleCustomCSSChange = (event: Event) => {
-      const { css } = (event as CustomEvent).detail;
-      injectCustomCSS(css, document);
-    };
-    window.addEventListener("widget-custom-css-change", handleCustomCSSChange);
 
     const root = createRoot(inlineContainer);
     root.render(
       <StrictMode>
-        <LanguageProvider
-          translationConfig={translation}
-          initialLanguage={translation?.defaultLanguage || "en"}
-        >
-          <ThemeProvider config={{ debug: config.debug }}>
+        <LanguageProvider initialLanguage={language || "en"}>
+          <ThemeProvider config={{ debug: config.debug }} initialTheme={theme || "dark"}>
             <Widget />
           </ThemeProvider>
         </LanguageProvider>
@@ -99,21 +86,14 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
     themeStyle.textContent = themeStyles;
     iframeDoc.head.appendChild(themeStyle);
 
-    if (style) {
-      injectCustomStyles(style, iframeDoc);
-    }
-
-    if (config.customCSS) {
-      injectCustomCSS(config.customCSS, iframeDoc);
+    if (styles) {
+      injectCustomStyles(styles, iframeDoc);
     }
 
     const BRIDGED_EVENTS = [
       "widget-theme-change",
       "widget-language-change",
       "widget-style-change",
-      "widget-custom-css-change",
-      "widget-debug-change",
-      "widget-user-data",
     ];
 
     BRIDGED_EVENTS.forEach(eventName => {
@@ -125,16 +105,10 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
     });
 
     const handleStyleChange = (event: Event) => {
-      const { styles } = (event as CustomEvent).detail;
-      injectCustomStyles(styles, iframeDoc);
+      const { styles: newStyles } = (event as CustomEvent).detail;
+      injectCustomStyles(newStyles, iframeDoc);
     };
     iframe.contentWindow?.addEventListener("widget-style-change", handleStyleChange);
-
-    const handleCustomCSSChange = (event: Event) => {
-      const { css } = (event as CustomEvent).detail;
-      injectCustomCSS(css, iframeDoc);
-    };
-    iframe.contentWindow?.addEventListener("widget-custom-css-change", handleCustomCSSChange);
 
     const container = iframeDoc.createElement("div");
     container.id = "widget-container";
@@ -143,11 +117,8 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
     const root = createRoot(container);
     root.render(
       <StrictMode>
-        <LanguageProvider
-          translationConfig={translation}
-          initialLanguage={translation?.defaultLanguage || "en"}
-        >
-          <ThemeProvider config={{ debug: config.debug }}>
+        <LanguageProvider initialLanguage={language || "en"}>
+          <ThemeProvider config={{ debug: config.debug }} initialTheme={theme || "dark"}>
             <Widget />
           </ThemeProvider>
         </LanguageProvider>

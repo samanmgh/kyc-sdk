@@ -21,12 +21,9 @@ export function useSDKInitialization() {
           apiKey: config.apiKey,
           tenantId: config.tenantId,
           debug: true,
-          style: config.style,
-          customCSS: config.customCSS,
-          translation: {
-            ...config.translation,
-            defaultLanguage: config.language || config.translation?.defaultLanguage || 'en',
-          },
+          theme: config.theme || 'dark',
+          language: config.language || 'en',
+          styles: config.styles,
         });
 
         await instance.init("#kyc-widget-container");

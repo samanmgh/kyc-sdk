@@ -8,7 +8,7 @@ export interface SDKConfig {
 
 export type Theme = "light" | "dark";
 
-export type Language = string;
+export type Language = 'en' | 'de';
 
 export interface Translation {
     [key: string]: string | Translation;
@@ -31,7 +31,5 @@ export interface ThemeContextValue {
 export interface LanguageContextValue {
     dictionary: Translation;
     language: Language;
-    changeLanguage: (lang: Language) => Promise<void>;
-    isLoading: boolean;
-    error: string | null;
+    changeLanguage: (lang: Language) => void;
 }
