@@ -1,6 +1,6 @@
-import type { InputHTMLAttributes } from "react";
+import type { InputHTMLAttributes } from 'react';
 
-export interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
+export interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /** Input label text */
   label?: string;
 
@@ -11,7 +11,7 @@ export interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   error?: string;
 
   /** Input size variant */
-  size?: "sm" | "md" | "lg";
+  size?: 'sm' | 'md' | 'lg';
 
   /** Full width flag */
   fullWidth?: boolean;

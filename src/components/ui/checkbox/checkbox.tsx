@@ -1,8 +1,9 @@
-import { forwardRef, useEffect, useId, useRef } from "react";
-import { cn } from "../../../utils";
-import { useControllableState } from "../../../hooks";
-import { CheckIcon, MinusIcon } from "../../../assets/icons";
-import type { CheckboxProps } from "./checkbox.types";
+import type { CheckboxProps } from '@/components/ui';
+
+import { cn } from '@/utils';
+import { useControllableState } from '@/hooks';
+import { CheckIcon, MinusIcon } from '@/assets/icons';
+import { useId, useRef, useEffect, forwardRef } from 'react';
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
@@ -14,7 +15,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       label,
       description,
       error,
-      size = "md",
+      size = 'md',
       className,
       disabled,
       required,
@@ -49,55 +50,55 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     };
 
     const sizeClasses = {
-      sm: "w-4 h-4",
-      md: "w-5 h-5",
-      lg: "w-6 h-6",
+      sm: 'w-4 h-4',
+      md: 'w-5 h-5',
+      lg: 'w-6 h-6',
     };
 
     const checkboxClasses = cn(
-      "component",
-      "appearance-none cursor-pointer",
-      "rounded",
-      "border-2",
-      "transition-all duration-200 ease-out",
-      "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-      "disabled:opacity-50 disabled:cursor-not-allowed",
+      'component',
+      'appearance-none cursor-pointer',
+      'rounded',
+      'border-2',
+      'transition-all duration-200 ease-out',
+      'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+      'disabled:opacity-50 disabled:cursor-not-allowed',
       // Unchecked state
       !(checked || indeterminate) && [
-        "border-border bg-background",
-        "hover:border-primary/60 hover:bg-primary/5",
-        "active:scale-95"
+        'border-border bg-background',
+        'hover:border-primary/60 hover:bg-primary/5',
+        'active:scale-95',
       ],
       // Checked/Indeterminate state
       (checked || indeterminate) && [
-        "bg-primary border-primary",
-        "shadow-[0_0_0_1px_rgba(0,0,0,0.05)]",
-        "hover:bg-primary/90 hover:border-primary/90",
-        "active:scale-95"
+        'bg-primary border-primary',
+        'shadow-[0_0_0_1px_rgba(0,0,0,0.05)]',
+        'hover:bg-primary/90 hover:border-primary/90',
+        'active:scale-95',
       ],
-      error && !checked && !indeterminate && "border-destructive hover:border-destructive/80",
+      error && !checked && !indeterminate && 'border-destructive hover:border-destructive/80',
       sizeClasses[size]
     );
 
     const containerClasses = cn(
-      "component flex items-start gap-2",
-      disabled && "opacity-50",
+      'component flex items-start gap-2',
+      disabled && 'opacity-50',
       className
     );
 
     return (
       <div className={containerClasses}>
-        <div className='relative shrink-0 pt-0.5'>
+        <div className="relative shrink-0 pt-0.5">
           <input
-            ref={node => {
-              if (typeof ref === "function") {
+            ref={(node) => {
+              if (typeof ref === 'function') {
                 ref(node);
               } else if (ref) {
                 ref.current = node;
               }
               inputRef.current = node;
             }}
-            type='checkbox'
+            type="checkbox"
             id={id}
             name={name}
             value={value}
@@ -106,57 +107,57 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             disabled={disabled}
             required={required}
             className={checkboxClasses}
-            aria-checked={indeterminate ? "mixed" : checked}
-            aria-invalid={error ? "true" : "false"}
+            aria-checked={indeterminate ? 'mixed' : checked}
+            aria-invalid={error ? 'true' : 'false'}
             aria-describedby={error ? errorId : description ? descriptionId : undefined}
             {...props}
           />
           <div
             className={cn(
-              "absolute inset-0 flex items-center justify-center pointer-events-none",
-              "text-primary-foreground",
-              "transition-all duration-200 ease-out",
-              (checked || indeterminate) ? "opacity-100 scale-100" : "opacity-0 scale-50",
-              checked && "checkbox-checked"
+              'absolute inset-0 flex items-center justify-center pointer-events-none',
+              'text-primary-foreground',
+              'transition-all duration-200 ease-out',
+              checked || indeterminate ? 'opacity-100 scale-100' : 'opacity-0 scale-50',
+              checked && 'checkbox-checked'
             )}
           >
             {indeterminate ? (
-              <MinusIcon className='w-3.5 h-3.5 animate-in zoom-in-50 duration-150' />
+              <MinusIcon className="w-3.5 h-3.5 animate-in zoom-in-50 duration-150" />
             ) : (
-              <CheckIcon className='checkmark w-3.5 h-3.5 animate-in zoom-in-50 duration-150' />
+              <CheckIcon className="checkmark w-3.5 h-3.5 animate-in zoom-in-50 duration-150" />
             )}
           </div>
         </div>
 
         {(label || description) && (
-          <div className='flex-1'>
+          <div className="flex-1">
             {label && (
               <label
                 htmlFor={id}
                 className={cn(
-                  "block text-base font-medium",
-                  "text-foreground",
-                  "cursor-pointer select-none",
-                  "transition-colors duration-150",
-                  !disabled && "hover:text-foreground/80",
-                  disabled && "cursor-not-allowed"
+                  'block text-base font-medium',
+                  'text-foreground',
+                  'cursor-pointer select-none',
+                  'transition-colors duration-150',
+                  !disabled && 'hover:text-foreground/80',
+                  disabled && 'cursor-not-allowed'
                 )}
               >
                 {label}
                 {required && (
-                  <span className='ml-1 text-destructive' aria-label='required'>
+                  <span className="ml-1 text-destructive" aria-label="required">
                     *
                   </span>
                 )}
               </label>
             )}
             {description && (
-              <p id={descriptionId} className='mt-0.5 text-sm text-muted-foreground'>
+              <p id={descriptionId} className="mt-0.5 text-sm text-muted-foreground">
                 {description}
               </p>
             )}
             {error && (
-              <p id={errorId} className='mt-1 text-sm text-destructive' role='alert'>
+              <p id={errorId} className="mt-1 text-sm text-destructive" role="alert">
                 {error}
               </p>
             )}
@@ -167,4 +168,4 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   }
 );
 
-Checkbox.displayName = "Checkbox";
+Checkbox.displayName = 'Checkbox';

@@ -1,5 +1,6 @@
-import { createContext } from "react";
-import type {ThemeContextValue} from "../../types";
+import type { ThemeContextValue } from '@/types';
+
+import { createContext } from 'react';
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null);
-ThemeContext.displayName = "SDKContext";
+ThemeContext.displayName = 'SDKContext';

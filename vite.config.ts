@@ -1,21 +1,21 @@
-import { defineConfig, type LibraryFormats, type Plugin } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
-import dts from "vite-plugin-dts";
-import path from "path";
-import fs from "fs";
+import fs from 'fs';
+import path from 'path';
+import dts from 'vite-plugin-dts';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import { type Plugin, defineConfig, type LibraryFormats } from 'vite';
 
 // Custom plugin to embed CSS string into the JS bundle for iframe injection
 function cssEmbedPlugin(): Plugin {
-  let cssContent = "";
+  let cssContent = '';
 
   return {
-    name: "css-embed-plugin",
-    enforce: "post",
+    name: 'css-embed-plugin',
+    enforce: 'post',
     generateBundle(_, bundle) {
       // Find and capture CSS content
       for (const [fileName, asset] of Object.entries(bundle)) {
-        if (fileName.endsWith(".css") && asset.type === "asset") {
+        if (fileName.endsWith('.css') && asset.type === 'asset') {
           cssContent = asset.source as string;
           break;
         }
@@ -24,7 +24,7 @@ function cssEmbedPlugin(): Plugin {
       // Inject CSS string into all JS bundles
       if (cssContent) {
         for (const [fileName, chunk] of Object.entries(bundle)) {
-          if (chunk.type === "chunk" && fileName.match(/\.(js|cjs)$/)) {
+          if (chunk.type === 'chunk' && fileName.match(/\.(js|cjs)$/)) {
             // Add CSS initialization code at the beginning of the bundle
             const cssInit = `(function(){if(typeof window!=="undefined"){window.__KYC_SDK_CSS__=${JSON.stringify(cssContent)};}})();`;
             chunk.code = cssInit + chunk.code;
@@ -36,7 +36,7 @@ function cssEmbedPlugin(): Plugin {
       if (!cssContent || !options.dir) return;
 
       // Write a JS module that exports the CSS string (for direct imports)
-      const cssModulePath = path.join(options.dir, "css-string.js");
+      const cssModulePath = path.join(options.dir, 'css-string.js');
       const cssModuleContent = `export const CSS_STRING = ${JSON.stringify(cssContent)};`;
       fs.writeFileSync(cssModulePath, cssModuleContent);
     },
@@ -44,7 +44,7 @@ function cssEmbedPlugin(): Plugin {
 }
 
 export default defineConfig(({ mode }) => {
-  const isDev = mode === "development";
+  const isDev = mode === 'development';
 
   return {
     plugins: [
@@ -52,18 +52,18 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       !isDev &&
         dts({
-          include: ["src"],
+          include: ['src'],
           exclude: [
-            "src/main.tsx",
-            "src/Widget.tsx",
-            "src/Widget.css",
-            "src/playground.tsx",
-            "src/playground/**/*",
-            "src/**/*.test.ts",
-            "src/**/*.test.tsx",
+            'src/main.tsx',
+            'src/Widget.tsx',
+            'src/Widget.css',
+            'src/playground.tsx',
+            'src/playground/**/*',
+            'src/**/*.test.ts',
+            'src/**/*.test.tsx',
           ],
-          tsconfigPath: "./tsconfig.build.json",
-          entryRoot: "src",
+          tsconfigPath: './tsconfig.build.json',
+          entryRoot: 'src',
           insertTypesEntry: true,
         }),
       !isDev && cssEmbedPlugin(),
@@ -71,39 +71,39 @@ export default defineConfig(({ mode }) => {
     build: isDev
       ? undefined
       : {
-          outDir: "dist",
+          outDir: 'dist',
           sourcemap: true,
-          minify: "esbuild" as const,
+          minify: 'esbuild' as const,
           lib: {
-            entry: path.resolve(__dirname, "src/index.ts"),
-            name: "KYC_SDK",
-            formats: ["es", "cjs", "iife"] as LibraryFormats[],
-            fileName: format => {
-              if (format === "iife") return "index.iife.js";
-              if (format === "cjs") return "index.cjs";
-              return "index.js";
+            entry: path.resolve(__dirname, 'src/index.ts'),
+            name: 'KYC_SDK',
+            formats: ['es', 'cjs', 'iife'] as LibraryFormats[],
+            fileName: (format) => {
+              if (format === 'iife') return 'index.iife.js';
+              if (format === 'cjs') return 'index.cjs';
+              return 'index.js';
             },
           },
           rollupOptions: {
             external: [
-              "react",
-              "react-dom",
-              "react-dom/client",
-              "react/jsx-runtime",
-              "react/jsx-dev-runtime",
+              'react',
+              'react-dom',
+              'react-dom/client',
+              'react/jsx-runtime',
+              'react/jsx-dev-runtime',
             ],
             output: {
-              exports: "named" as const,
+              exports: 'named' as const,
               globals: {
-                react: "React",
-                "react-dom": "ReactDOM",
-                "react-dom/client": "ReactDOM",
-                "react/jsx-runtime": "jsxRuntime",
-                "react/jsx-dev-runtime": "jsxRuntime",
+                react: 'React',
+                'react-dom': 'ReactDOM',
+                'react-dom/client': 'ReactDOM',
+                'react/jsx-runtime': 'jsxRuntime',
+                'react/jsx-dev-runtime': 'jsxRuntime',
               },
-              assetFileNames: assetInfo => {
-                if (assetInfo.name && assetInfo.name.endsWith(".css")) return "index.css";
-                return assetInfo.name || "assets/[name][extname]";
+              assetFileNames: (assetInfo) => {
+                if (assetInfo.name && assetInfo.name.endsWith('.css')) return 'index.css';
+                return assetInfo.name || 'assets/[name][extname]';
               },
             },
           },
@@ -111,7 +111,7 @@ export default defineConfig(({ mode }) => {
         },
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src"),
+        '@': path.resolve(__dirname, './src'),
       },
     },
   };

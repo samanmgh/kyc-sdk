@@ -1,4 +1,5 @@
-import { createContext } from "react";
-import type { RadioContextValue } from "./radio-button.types.ts";
+import { createContext } from 'react';
+
+import type { RadioContextValue } from './radio-button.types.ts';
 
 export const RadioContext = createContext<RadioContextValue | null>(null);

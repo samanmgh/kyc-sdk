@@ -1,11 +1,11 @@
 import type { PlaygroundConfig } from '../types';
 
 export const DEFAULT_CONFIG: PlaygroundConfig = {
-  apiKey: "test-api-key-12345",
+  apiKey: 'test-api-key-12345',
   tenantId: 123,
   styles: {
-    primary: "oklch(0.55 0.22 264)",
-    radius: "0.625rem",
+    primary: 'oklch(0.55 0.22 264)',
+    radius: '0.625rem',
   },
   language: 'en',
   theme: 'dark',

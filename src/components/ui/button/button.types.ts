@@ -1,24 +1,24 @@
-import type { ButtonHTMLAttributes } from 'react'
+import type { ButtonHTMLAttributes } from 'react';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Button variant */
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
 
   /** Button size */
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg';
 
   /** Full width flag */
-  fullWidth?: boolean
+  fullWidth?: boolean;
 
   /** Loading state */
-  loading?: boolean
+  loading?: boolean;
 
   /** Icon to display before children */
-  startIcon?: React.ReactNode
+  startIcon?: React.ReactNode;
 
   /** Icon to display after children */
-  endIcon?: React.ReactNode
+  endIcon?: React.ReactNode;
 
   /** Custom class name */
-  className?: string
+  className?: string;
 }

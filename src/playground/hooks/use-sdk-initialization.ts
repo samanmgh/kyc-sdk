@@ -1,7 +1,9 @@
-import { useState, useCallback } from "react";
-import KYC_SDK from "../../index";
-import type { PlaygroundConfig } from "../types";
-import { INIT_DELAY_MS } from "../constants";
+import { useState, useCallback } from 'react';
+
+import KYC_SDK from '../../index';
+import { INIT_DELAY_MS } from '../constants';
+
+import type { PlaygroundConfig } from '../types';
 
 export function useSDKInitialization() {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -15,22 +17,22 @@ export function useSDKInitialization() {
 
       try {
         setShowContainer(true);
-        await new Promise(resolve => setTimeout(resolve, INIT_DELAY_MS));
+        await new Promise((resolve) => setTimeout(resolve, INIT_DELAY_MS));
 
         const instance = new KYC_SDK({
           apiKey: config.apiKey,
           tenantId: config.tenantId,
           debug: true,
-          theme: config.theme || "dark",
-          language: config.language || "en",
+          theme: config.theme || 'dark',
+          language: config.language || 'en',
           styles: config.styles,
         });
 
-        await instance.init(""); //iframe initialization
+        await instance.init(''); //iframe initialization
         //  await instance.init("#kyc-widget-container"); // For inline initialization
         setIsInitialized(true);
       } catch (error) {
-        console.error("Error initializing SDK:", error);
+        console.error('Error initializing SDK:', error);
       }
     },
     [isInitialized]

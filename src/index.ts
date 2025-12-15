@@ -1,25 +1,31 @@
+import { InitializeWidget } from './main';
+import {
+  resetWidgetState,
+  dispatchStyleChange,
+  watchHostThemeChanges,
+  watchHostLanguageChanges,
+} from './utils';
+
 import type {
-  SDK_Config,
   KYCConfig,
+  SDK_Config,
   StyleConfig,
-  LanguageChangeResponse,
-  ThemeChangeResponse,
   InitResponse,
+  ThemeChangeResponse,
   StyleChangeResponse,
-} from "./types";
-import { InitializeWidget } from "./main";
-import { resetWidgetState, dispatchStyleChange, watchHostThemeChanges, watchHostLanguageChanges } from "./utils";
+  LanguageChangeResponse,
+} from './types';
 
 let widgetInstance: KYC_SDK | null = null;
 
 export class KYC_SDK {
-  static version = "0.0.1";
+  static version = '0.0.1';
 
   private apiKey: string;
   private tenantId: number;
   private debug: boolean;
-  private currentTheme: "light" | "dark" = "dark";
-  private currentLang: "en" | "de" = "en";
+  private currentTheme: 'light' | 'dark' = 'dark';
+  private currentLang: 'en' | 'de' = 'en';
   private styles: StyleConfig = {};
   private themeWatcherCleanup: (() => void) | null = null;
   private languageWatcherCleanup: (() => void) | null = null;
@@ -28,15 +34,15 @@ export class KYC_SDK {
     this.apiKey = options.apiKey;
     this.tenantId = options.tenantId;
     this.debug = options.debug ?? false;
-    this.currentTheme = options.theme ?? "dark";
-    this.currentLang = options.language ?? "en";
+    this.currentTheme = options.theme ?? 'dark';
+    this.currentLang = options.language ?? 'en';
     this.styles = options.styles ?? {};
 
-    if (this.debug) this.log("KYC_SDK constructed", options);
+    if (this.debug) this.log('KYC_SDK constructed', options);
   }
 
   public init(containerSelector?: string): Promise<InitResponse> {
-    if (this.debug) this.log("KYC_SDK initialized");
+    if (this.debug) this.log('KYC_SDK initialized');
 
     const config: SDK_Config = {
       apiKey: this.apiKey,
@@ -62,12 +68,12 @@ export class KYC_SDK {
   private startThemeWatcher(): void {
     this.stopThemeWatcher();
 
-    this.themeWatcherCleanup = watchHostThemeChanges(newTheme => {
-      if (this.debug) this.log("Host theme changed to", newTheme);
+    this.themeWatcherCleanup = watchHostThemeChanges((newTheme) => {
+      if (this.debug) this.log('Host theme changed to', newTheme);
       this.changeTheme(newTheme);
     });
 
-    if (this.debug) this.log("Theme watcher started");
+    if (this.debug) this.log('Theme watcher started');
   }
 
   private stopThemeWatcher(): void {
@@ -80,12 +86,12 @@ export class KYC_SDK {
   private startLanguageWatcher(): void {
     this.stopLanguageWatcher();
 
-    this.languageWatcherCleanup = watchHostLanguageChanges(newLang => {
-      if (this.debug) this.log("Host language changed to", newLang);
+    this.languageWatcherCleanup = watchHostLanguageChanges((newLang) => {
+      if (this.debug) this.log('Host language changed to', newLang);
       this.changeLanguage(newLang);
     });
 
-    if (this.debug) this.log("Language watcher started");
+    if (this.debug) this.log('Language watcher started');
   }
 
   private stopLanguageWatcher(): void {
@@ -99,12 +105,12 @@ export class KYC_SDK {
     this.stopThemeWatcher();
     this.stopLanguageWatcher();
 
-    const inlineContainer = document.getElementById("widget-inline-container");
+    const inlineContainer = document.getElementById('widget-inline-container');
     if (inlineContainer) {
       inlineContainer.remove();
     }
 
-    const iframe = document.getElementById("widget-iframe");
+    const iframe = document.getElementById('widget-iframe');
     if (iframe) {
       iframe.remove();
     }
@@ -112,7 +118,7 @@ export class KYC_SDK {
     resetWidgetState();
     widgetInstance = null;
 
-    if (this.debug) this.log("KYC_SDK destroyed");
+    if (this.debug) this.log('KYC_SDK destroyed');
   }
 
   public changeStyles(styles: StyleConfig): Promise<StyleChangeResponse> {
@@ -126,7 +132,7 @@ export class KYC_SDK {
     });
   }
 
-  public changeLanguage(lang: "en" | "de"): Promise<LanguageChangeResponse> {
+  public changeLanguage(lang: 'en' | 'de'): Promise<LanguageChangeResponse> {
     // Skip if language is already the same
     if (lang === this.currentLang) {
       return Promise.resolve({
@@ -137,11 +143,11 @@ export class KYC_SDK {
 
     this.currentLang = lang;
 
-    if (this.debug) this.log("Language changed to", lang);
+    if (this.debug) this.log('Language changed to', lang);
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       window.dispatchEvent(
-        new CustomEvent("widget-language-change", {
+        new CustomEvent('widget-language-change', {
           detail: { lang },
         })
       );
@@ -153,7 +159,7 @@ export class KYC_SDK {
     });
   }
 
-  public changeTheme(theme: "light" | "dark"): Promise<ThemeChangeResponse> {
+  public changeTheme(theme: 'light' | 'dark'): Promise<ThemeChangeResponse> {
     // Skip if theme is already the same
     if (theme === this.currentTheme) {
       return Promise.resolve({
@@ -164,11 +170,11 @@ export class KYC_SDK {
 
     this.currentTheme = theme;
 
-    if (this.debug) this.log("Theme changed to", theme);
+    if (this.debug) this.log('Theme changed to', theme);
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       window.dispatchEvent(
-        new CustomEvent("widget-theme-change", {
+        new CustomEvent('widget-theme-change', {
           detail: { theme },
         })
       );
@@ -182,7 +188,7 @@ export class KYC_SDK {
 
   private log(...args: unknown[]): void {
     if (this.debug) {
-      console.log("[KYC_SDK]", ...args);
+      console.log('[KYC_SDK]', ...args);
     }
   }
 }
@@ -209,11 +215,11 @@ export async function createKYCWidget(config: KYCConfig): Promise<KYC_SDK> {
 export default KYC_SDK;
 
 export type {
-  StyleConfig,
-  SDK_Config,
   KYCConfig,
-  LanguageChangeResponse,
-  ThemeChangeResponse,
+  SDK_Config,
+  StyleConfig,
   InitResponse,
+  ThemeChangeResponse,
   StyleChangeResponse,
-} from "./types";
+  LanguageChangeResponse,
+} from './types';

@@ -1,8 +1,10 @@
-import { forwardRef, useContext, useId } from "react";
-import { cn } from "../../../utils";
-import type { RadioButtonProps } from "./radio-button.types";
-import { RadioContext } from "./radio-group-context";
-import { RadioDot } from "./radio-dot";
+import type { RadioButtonProps } from '@/components/ui';
+
+import { cn } from '@/utils';
+import { useId, forwardRef, useContext } from 'react';
+
+import { RadioDot } from './radio-dot';
+import { RadioContext } from './radio-group-context';
 
 export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
   (
@@ -15,7 +17,7 @@ export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
     const descriptionId = `${id}-description`;
 
     if (!context) {
-      throw new Error("RadioButton must be used within a RadioGroup");
+      throw new Error('RadioButton must be used within a RadioGroup');
     }
 
     const { name, value: groupValue, onChange, disabled: groupDisabled } = context;
@@ -29,42 +31,42 @@ export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
     };
 
     const radioClasses = cn(
-      "component",
-      "appearance-none cursor-pointer",
-      "w-5 h-5",
-      "rounded-full",
-      "border-2",
-      "transition-all duration-200 ease-out",
-      "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-      "disabled:opacity-50 disabled:cursor-not-allowed",
+      'component',
+      'appearance-none cursor-pointer',
+      'w-5 h-5',
+      'rounded-full',
+      'border-2',
+      'transition-all duration-200 ease-out',
+      'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+      'disabled:opacity-50 disabled:cursor-not-allowed',
 
       !checked && [
-        "border-border bg-background",
-        "hover:border-primary/60 hover:bg-primary/5",
-        "active:scale-95",
+        'border-border bg-background',
+        'hover:border-primary/60 hover:bg-primary/5',
+        'active:scale-95',
       ],
 
       checked && [
-        "bg-primary border-primary",
-        "shadow-[0_0_0_1px_rgba(0,0,0,0.05)]",
-        "hover:bg-primary/90 hover:border-primary/90",
-        "active:scale-95",
+        'bg-primary border-primary',
+        'shadow-[0_0_0_1px_rgba(0,0,0,0.05)]',
+        'hover:bg-primary/90 hover:border-primary/90',
+        'active:scale-95',
       ]
     );
 
     const containerClasses = cn(
-      "component flex items-center gap-3",
-      !disabled && "cursor-pointer",
-      disabled && "opacity-50",
+      'component flex items-center gap-3',
+      !disabled && 'cursor-pointer',
+      disabled && 'opacity-50',
       className
     );
 
     return (
       <label className={containerClasses} htmlFor={id}>
-        <div className='relative shrink-0 flex items-center justify-center'>
+        <div className="relative shrink-0 flex items-center justify-center">
           <input
             ref={ref}
-            type='radio'
+            type="radio"
             id={id}
             name={name}
             value={value}
@@ -77,9 +79,9 @@ export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
           />
           <div
             className={cn(
-              "absolute inset-0 flex items-center justify-center pointer-events-none",
-              "radio-checked transition-all duration-200 ease-out",
-              checked ? "opacity-100 scale-100" : "opacity-0 scale-50"
+              'absolute inset-0 flex items-center justify-center pointer-events-none',
+              'radio-checked transition-all duration-200 ease-out',
+              checked ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
             )}
           >
             <RadioDot />
@@ -87,15 +89,15 @@ export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
         </div>
 
         {(label || description) && (
-          <div className='flex-1'>
+          <div className="flex-1">
             {label && (
               <span
                 className={cn(
-                  "block text-base font-medium leading-5",
-                  "text-foreground",
-                  "select-none",
-                  "transition-colors duration-150",
-                  !disabled && "group-hover:text-foreground/80"
+                  'block text-base font-medium leading-5',
+                  'text-foreground',
+                  'select-none',
+                  'transition-colors duration-150',
+                  !disabled && 'group-hover:text-foreground/80'
                 )}
               >
                 {label}
@@ -104,7 +106,7 @@ export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
             {description && (
               <p
                 id={descriptionId}
-                className='mt-1 text-sm text-muted-foreground select-none leading-tight'
+                className="mt-1 text-sm text-muted-foreground select-none leading-tight"
               >
                 {description}
               </p>
@@ -116,4 +118,4 @@ export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
   }
 );
 
-RadioButton.displayName = "RadioButton";
+RadioButton.displayName = 'RadioButton';

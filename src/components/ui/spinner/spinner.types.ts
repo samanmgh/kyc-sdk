@@ -3,5 +3,5 @@ export interface SpinnerProps {
   className?: string;
 
   /** Spinner size */
-  size?: "sm" | "md" | "lg";
+  size?: 'sm' | 'md' | 'lg';
 }

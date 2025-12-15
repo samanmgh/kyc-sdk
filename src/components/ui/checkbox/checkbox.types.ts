@@ -1,30 +1,33 @@
-import type { InputHTMLAttributes } from 'react'
+import type { InputHTMLAttributes } from 'react';
 
-export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type' | 'onChange'> {
+export interface CheckboxProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'size' | 'type' | 'onChange'
+> {
   /** Controlled checked state */
-  checked?: boolean
+  checked?: boolean;
 
   /** Default checked state (uncontrolled) */
-  defaultChecked?: boolean
+  defaultChecked?: boolean;
 
   /** Change handler */
-  onChange?: (checked: boolean) => void
+  onChange?: (checked: boolean) => void;
 
   /** Indeterminate state */
-  indeterminate?: boolean
+  indeterminate?: boolean;
 
   /** Label text */
-  label?: string
+  label?: string;
 
   /** Description text */
-  description?: string
+  description?: string;
 
   /** Error message */
-  error?: string
+  error?: string;
 
   /** Size variant */
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg';
 
   /** Custom class name */
-  className?: string
+  className?: string;
 }

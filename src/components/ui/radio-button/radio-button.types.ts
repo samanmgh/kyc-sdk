@@ -1,57 +1,60 @@
-import type { InputHTMLAttributes } from 'react'
+import type { InputHTMLAttributes } from 'react';
 
 export interface RadioGroupProps {
   /** Controlled value */
-  value?: string
+  value?: string;
 
   /** Default value (uncontrolled) */
-  defaultValue?: string
+  defaultValue?: string;
 
   /** Change handler */
-  onChange?: (value: string) => void
+  onChange?: (value: string) => void;
 
   /** Radio group name (required) */
-  name: string
+  name: string;
 
   /** Orientation */
-  orientation?: 'horizontal' | 'vertical'
+  orientation?: 'horizontal' | 'vertical';
 
   /** Group label */
-  label?: string
+  label?: string;
 
   /** Error message */
-  error?: string
+  error?: string;
 
   /** Disabled state */
-  disabled?: boolean
+  disabled?: boolean;
 
   /** Required field */
-  required?: boolean
+  required?: boolean;
 
   /** Children (RadioButton components) */
-  children: React.ReactNode
+  children: React.ReactNode;
 
   /** Custom class name */
-  className?: string
+  className?: string;
 }
 
-export interface RadioButtonProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
+export interface RadioButtonProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'type' | 'size'
+> {
   /** Radio button value */
-  value: string
+  value: string;
 
   /** Label text */
-  label?: string
+  label?: string;
 
   /** Description text */
-  description?: string
+  description?: string;
 
   /** Custom class name */
-  className?: string
+  className?: string;
 }
 
 export interface RadioContextValue {
-  name: string
-  value?: string
-  onChange: (value: string) => void
-  disabled?: boolean
+  name: string;
+  value?: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
 }

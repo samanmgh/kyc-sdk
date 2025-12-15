@@ -1,8 +1,10 @@
-import { Modal } from "./modal";
-import { ColorPicker } from "./color-picker";
-import { LanguageSelector } from "./language-selector";
-import { getWidgetInstance } from "../../index";
-import type { PlaygroundConfig } from "../types";
+import { getWidgetInstance } from '@/index';
+
+import { Modal } from './modal';
+import { ColorPicker } from './color-picker';
+import { LanguageSelector } from './language-selector';
+
+import type { PlaygroundConfig } from '../types';
 
 interface ConfigurationModalProps {
   config: PlaygroundConfig;
@@ -65,22 +67,28 @@ export function ConfigurationModal({
         </h3>
 
         <div className="mb-4">
-          <label className="block mb-2 text-sm font-semibold text-gray-700">API Key</label>
+          <label htmlFor="api-key" className="block mb-2 text-sm font-semibold text-gray-700">
+            API Key
+          </label>
           <input
+            id="api-key"
             type="text"
             value={config.apiKey}
-            onChange={e => onConfigChange({ apiKey: e.target.value })}
+            onChange={(e) => onConfigChange({ apiKey: e.target.value })}
             disabled={isInitialized}
             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm disabled:bg-gray-100 focus:outline-none focus:border-blue-500 transition-colors"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block mb-2 text-sm font-semibold text-gray-700">Tenant ID</label>
+          <label htmlFor="tenant-id" className="block mb-2 text-sm font-semibold text-gray-700">
+            Tenant ID
+          </label>
           <input
+            id="tenant-id"
             type="number"
             value={config.tenantId}
-            onChange={e => onConfigChange({ tenantId: Number(e.target.value) })}
+            onChange={(e) => onConfigChange({ tenantId: Number(e.target.value) })}
             disabled={isInitialized}
             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm disabled:bg-gray-100 focus:outline-none focus:border-blue-500 transition-colors"
           />
@@ -94,10 +102,13 @@ export function ConfigurationModal({
         </h3>
 
         <div className="mb-4">
-          <label className="block mb-2 text-sm font-semibold text-gray-700">Theme</label>
+          <label htmlFor="theme" className="block mb-2 text-sm font-semibold text-gray-700">
+            Theme
+          </label>
           <select
+            id="theme"
             value={config.theme || 'dark'}
-            onChange={e => handleThemeChange(e.target.value as 'light' | 'dark')}
+            onChange={(e) => handleThemeChange(e.target.value as 'light' | 'dark')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-blue-500"
           >
             <option value="light">Light</option>
@@ -108,16 +119,19 @@ export function ConfigurationModal({
         <ColorPicker
           label="Primary Color"
           value={config.styles?.primary || 'oklch(0.55 0.22 264)'}
-          onChange={value => handleStyleChange({ primary: value })}
+          onChange={(value) => handleStyleChange({ primary: value })}
           disabled={false}
         />
 
         <div className="mb-4">
-          <label className="block mb-2 text-sm font-semibold text-gray-700">Border Radius</label>
+          <label htmlFor="radius" className="block mb-2 text-sm font-semibold text-gray-700">
+            Border Radius
+          </label>
           <input
+            id="radius"
             type="text"
             value={config.styles?.radius || '0.625rem'}
-            onChange={e => handleStyleChange({ radius: e.target.value })}
+            onChange={(e) => handleStyleChange({ radius: e.target.value })}
             disabled={false}
             placeholder="0.625rem"
             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm disabled:bg-gray-100 focus:outline-none focus:border-blue-500"

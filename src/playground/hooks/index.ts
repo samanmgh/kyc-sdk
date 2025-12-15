@@ -1,1 +1,1 @@
-export { useSDKInitialization } from "./use-sdk-initialization";
+export { useSDKInitialization } from './use-sdk-initialization';

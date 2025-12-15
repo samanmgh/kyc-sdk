@@ -1,10 +1,12 @@
-import { StrictMode, useState } from "react";
-import { createRoot } from "react-dom/client";
-import { PlaygroundHeader, WidgetContainer, ConfigurationModal } from "./playground/components";
-import { useSDKInitialization } from "./playground/hooks";
-import { DEFAULT_CONFIG } from "./playground/constants";
-import type { PlaygroundConfig } from "./playground/types";
-import "./index.css";
+import { useState, StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+
+import { DEFAULT_CONFIG } from './playground/constants';
+import { useSDKInitialization } from './playground/hooks';
+import { WidgetContainer, PlaygroundHeader, ConfigurationModal } from './playground/components';
+
+import type { PlaygroundConfig } from './playground/types';
+import './index.css';
 
 function Playground() {
   const [config, setConfig] = useState<PlaygroundConfig>(DEFAULT_CONFIG);
@@ -15,7 +17,7 @@ function Playground() {
   const handleInitialize = () => initialize(config);
 
   const handleConfigChange = (updates: Partial<PlaygroundConfig>) => {
-    setConfig(prev => ({ ...prev, ...updates }));
+    setConfig((prev) => ({ ...prev, ...updates }));
     // Sync language state if language was changed in config
     if (updates.language) {
       setCurrentLanguage(updates.language);
@@ -24,7 +26,7 @@ function Playground() {
 
   const handleLanguageChange = (lang: 'en' | 'de') => {
     setCurrentLanguage(lang);
-    setConfig(prev => ({ ...prev, language: lang }));
+    setConfig((prev) => ({ ...prev, language: lang }));
   };
 
   const handleOpenConfig = () => setShowConfigModal(true);
@@ -51,7 +53,7 @@ function Playground() {
   );
 }
 
-const container = document.getElementById("root");
+const container = document.getElementById('root');
 if (container) {
   const root = createRoot(container);
   root.render(

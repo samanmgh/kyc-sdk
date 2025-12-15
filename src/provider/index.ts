@@ -1,3 +1,3 @@
-export { ThemeProvider } from "./theme-provider";
-export { LanguageProvider } from "./language-provider";
-export { useSDKConfig, useSDKTheme } from "../hooks/use-sdk-config";
+export { ThemeProvider } from './theme-provider';
+export { LanguageProvider } from './language-provider';
+export { useSDKTheme, useSDKConfig } from '../hooks/use-sdk-config';

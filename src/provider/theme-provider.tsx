@@ -1,7 +1,9 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { ThemeContext } from "./context";
-import { injectFallbackCSS } from "../utils";
-import type { KYCSDKProviderProps, SDKConfig, Theme } from "../types";
+import type { Theme, SDKConfig, KYCSDKProviderProps } from '@/types';
+
+import { injectFallbackCSS } from '@/utils';
+import { useMemo, useState, useEffect, useCallback } from 'react';
+
+import { ThemeContext } from './context';
 
 interface ThemeProviderProps extends KYCSDKProviderProps {
   initialTheme?: Theme;
@@ -10,7 +12,7 @@ interface ThemeProviderProps extends KYCSDKProviderProps {
 export function ThemeProvider({
   children,
   config = {},
-  initialTheme = "dark",
+  initialTheme = 'dark',
   theme: controlledTheme,
   setTheme: controlledSetTheme,
 }: ThemeProviderProps) {
@@ -24,7 +26,7 @@ export function ThemeProvider({
   useEffect(() => {
     const cleanup = injectFallbackCSS(theme);
     if (config.debug) {
-      console.log("[KYC SDK] Injected CSS for theme:", theme);
+      console.log('[KYC SDK] Injected CSS for theme:', theme);
     }
     return cleanup;
   }, [theme, config.debug]);
@@ -35,7 +37,7 @@ export function ThemeProvider({
         controlledSetTheme(newTheme);
       } else {
         setInternalTheme(newTheme);
-        document.documentElement.classList.remove("light", "dark");
+        document.documentElement.classList.remove('light', 'dark');
         document.documentElement.classList.add(newTheme);
       }
     },
@@ -43,7 +45,7 @@ export function ThemeProvider({
   );
 
   const toggleTheme = useCallback(() => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    setTheme(theme === 'dark' ? 'light' : 'dark');
   }, [theme, setTheme]);
 
   // Listen for theme change events from SDK
@@ -52,13 +54,13 @@ export function ThemeProvider({
       const { theme: newTheme } = (event as CustomEvent).detail;
       setTheme(newTheme);
     };
-    window.addEventListener("widget-theme-change", handleThemeChange);
-    return () => window.removeEventListener("widget-theme-change", handleThemeChange);
+    window.addEventListener('widget-theme-change', handleThemeChange);
+    return () => window.removeEventListener('widget-theme-change', handleThemeChange);
   }, [setTheme]);
 
   useEffect(() => {
     if (config.debug) {
-      console.log("[KYC SDK] Provider initialized", {
+      console.log('[KYC SDK] Provider initialized', {
         theme,
         isControlled,
         config,
@@ -79,4 +81,4 @@ export function ThemeProvider({
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 }
 
-ThemeProvider.displayName = "ThemeProvider";
+ThemeProvider.displayName = 'ThemeProvider';

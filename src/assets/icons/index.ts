@@ -1,5 +1,5 @@
-export { SpinnerIcon } from "./spinner";
-export { CheckIcon } from "./check";
-export { MinusIcon } from "./minus";
-export { ChevronDownIcon } from "./chevron-down";
-export { XIcon } from "./x";
+export { XIcon } from './x';
+export { CheckIcon } from './check';
+export { MinusIcon } from './minus';
+export { SpinnerIcon } from './spinner';
+export { ChevronDownIcon } from './chevron-down';

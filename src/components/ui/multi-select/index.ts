@@ -1,2 +1,2 @@
-export { MultiSelect } from "./multi-select";
-export type { MultiSelectProps, MultiSelectOption } from "./multi-select.types";
+export { MultiSelect } from './multi-select';
+export type { MultiSelectProps, MultiSelectOption } from './multi-select.types';

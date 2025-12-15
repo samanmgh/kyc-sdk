@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState, useCallback } from 'react';
 
 export interface UseControllableStateParams<T> {
   value?: T;
@@ -18,7 +18,7 @@ export function useControllableState<T>({
   const handleChange = useCallback(
     (nextValue: T | ((prev: T) => T)) => {
       const newValue =
-        typeof nextValue === "function" ? (nextValue as (prev: T) => T)(value as T) : nextValue;
+        typeof nextValue === 'function' ? (nextValue as (prev: T) => T)(value as T) : nextValue;
 
       if (!isControlled) {
         setUncontrolledValue(newValue);

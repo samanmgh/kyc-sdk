@@ -1,2 +1,2 @@
-export * from './provider';
-export * from './widget';
+export type * from './widget';
+export type * from './provider';

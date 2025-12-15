@@ -1,13 +1,15 @@
-import { forwardRef } from "react";
-import { cn } from "../../../utils";
-import { Spinner } from "../spinner";
-import type { ButtonProps } from "./button.types";
+import { cn } from '@/utils';
+import { forwardRef } from 'react';
+
+import { Spinner } from '../spinner';
+
+import type { ButtonProps } from './button.types';
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
-      variant = "primary",
-      size = "md",
+      variant = 'primary',
+      size = 'md',
       fullWidth = false,
       loading = false,
       startIcon,
@@ -15,7 +17,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       className,
       children,
       disabled,
-      type = "button",
+      type = 'button',
       ...props
     },
     ref
@@ -23,44 +25,44 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const isDisabled = disabled || loading;
 
     const baseClasses = cn(
-      "inline-flex items-center justify-center gap-2",
-      "rounded-md",
-      "font-medium font-sans",
-      "transition-colors duration-200",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      "disabled:opacity-50 disabled:cursor-not-allowed",
-      fullWidth && "w-full"
+      'inline-flex items-center justify-center gap-2',
+      'rounded-md',
+      'font-medium font-sans',
+      'transition-colors duration-200',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+      'disabled:opacity-50 disabled:cursor-not-allowed',
+      fullWidth && 'w-full'
     );
 
     const sizeClasses = {
-      sm: "h-8 px-3 text-sm",
-      md: "h-10 px-4 text-base",
-      lg: "h-12 px-6 text-lg",
+      sm: 'h-8 px-3 text-sm',
+      md: 'h-10 px-4 text-base',
+      lg: 'h-12 px-6 text-lg',
     };
 
     const variantClasses = {
       primary: cn(
-        "bg-primary text-primary-foreground",
-        "hover:bg-primary/90",
-        "active:bg-primary/80",
-        "border border-transparent"
+        'bg-primary text-primary-foreground',
+        'hover:bg-primary/90',
+        'active:bg-primary/80',
+        'border border-transparent'
       ),
       secondary: cn(
-        "bg-secondary text-secondary-foreground",
-        "hover:bg-secondary/80",
-        "border border-transparent"
+        'bg-secondary text-secondary-foreground',
+        'hover:bg-secondary/80',
+        'border border-transparent'
       ),
       outline: cn(
-        "bg-transparent text-primary",
-        "border border-primary",
-        "hover:bg-primary/10",
-        "active:bg-primary/20"
+        'bg-transparent text-primary',
+        'border border-primary',
+        'hover:bg-primary/10',
+        'active:bg-primary/20'
       ),
       ghost: cn(
-        "bg-transparent text-foreground",
-        "border border-transparent",
-        "hover:bg-muted",
-        "active:bg-muted-foreground/10"
+        'bg-transparent text-foreground',
+        'border border-transparent',
+        'hover:bg-muted',
+        'active:bg-muted-foreground/10'
       ),
     };
 
@@ -79,15 +81,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {loading && (
           <>
             <Spinner />
-            <span className='sr-only'>Loading</span>
+            <span className="sr-only">Loading</span>
           </>
         )}
-        {!loading && startIcon && <span className='shrink-0'>{startIcon}</span>}
+        {!loading && startIcon && <span className="shrink-0">{startIcon}</span>}
         {children}
-        {!loading && endIcon && <span className='shrink-0'>{endIcon}</span>}
+        {!loading && endIcon && <span className="shrink-0">{endIcon}</span>}
       </button>
     );
   }
 );
 
-Button.displayName = "Button";
+Button.displayName = 'Button';

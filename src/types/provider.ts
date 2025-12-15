@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
 export interface SDKConfig {
   apiKey?: string;
@@ -6,12 +6,12 @@ export interface SDKConfig {
   baseUrl?: string;
 }
 
-export type Theme = "light" | "dark";
+export type Theme = 'light' | 'dark';
 
 export type Language = 'en' | 'de';
 
 export interface Translation {
-    [key: string]: string | Translation;
+  [key: string]: string | Translation;
 }
 
 export interface KYCSDKProviderProps {
@@ -29,7 +29,7 @@ export interface ThemeContextValue {
 }
 
 export interface LanguageContextValue {
-    dictionary: Translation;
-    language: Language;
-    changeLanguage: (lang: Language) => void;
+  dictionary: Translation;
+  language: Language;
+  changeLanguage: (lang: Language) => void;
 }
