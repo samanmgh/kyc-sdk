@@ -1,8 +1,47 @@
-import { defineConfig, type LibraryFormats } from "vite";
+import { defineConfig, type LibraryFormats, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import dts from "vite-plugin-dts";
 import path from "path";
+import fs from "fs";
+
+// Custom plugin to embed CSS string into the JS bundle for iframe injection
+function cssEmbedPlugin(): Plugin {
+  let cssContent = "";
+
+  return {
+    name: "css-embed-plugin",
+    enforce: "post",
+    generateBundle(_, bundle) {
+      // Find and capture CSS content
+      for (const [fileName, asset] of Object.entries(bundle)) {
+        if (fileName.endsWith(".css") && asset.type === "asset") {
+          cssContent = asset.source as string;
+          break;
+        }
+      }
+
+      // Inject CSS string into all JS bundles
+      if (cssContent) {
+        for (const [fileName, chunk] of Object.entries(bundle)) {
+          if (chunk.type === "chunk" && fileName.match(/\.(js|cjs)$/)) {
+            // Add CSS initialization code at the beginning of the bundle
+            const cssInit = `(function(){if(typeof window!=="undefined"){window.__KYC_SDK_CSS__=${JSON.stringify(cssContent)};}})();`;
+            chunk.code = cssInit + chunk.code;
+          }
+        }
+      }
+    },
+    writeBundle(options) {
+      if (!cssContent || !options.dir) return;
+
+      // Write a JS module that exports the CSS string (for direct imports)
+      const cssModulePath = path.join(options.dir, "css-string.js");
+      const cssModuleContent = `export const CSS_STRING = ${JSON.stringify(cssContent)};`;
+      fs.writeFileSync(cssModulePath, cssModuleContent);
+    },
+  };
+}
 
 export default defineConfig(({ mode }) => {
   const isDev = mode === "development";
@@ -27,6 +66,7 @@ export default defineConfig(({ mode }) => {
           entryRoot: "src",
           insertTypesEntry: true,
         }),
+      !isDev && cssEmbedPlugin(),
     ].filter(Boolean),
     build: isDev
       ? undefined

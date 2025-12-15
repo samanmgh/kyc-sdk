@@ -21,12 +21,13 @@ export function useSDKInitialization() {
           apiKey: config.apiKey,
           tenantId: config.tenantId,
           debug: true,
-          theme: config.theme || 'dark',
-          language: config.language || 'en',
+          theme: config.theme || "dark",
+          language: config.language || "en",
           styles: config.styles,
         });
 
-        await instance.init("#kyc-widget-container");
+        await instance.init(""); //iframe initialization
+        //  await instance.init("#kyc-widget-container"); // For inline initialization
         setIsInitialized(true);
       } catch (error) {
         console.error("Error initializing SDK:", error);

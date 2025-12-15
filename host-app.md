@@ -140,7 +140,7 @@ export default function Home() {
         {/* SDK Container */}
         <div className='rounded-lg border border-gray-800 bg-gray-900 p-4'>
           {isLoading && (
-            <div className='flex min-h-[600px] items-center justify-center'>
+            <div className='flex min-h-150 items-center justify-center'>
               <div className='text-center'>
                 <div className='mb-4 h-12 w-12 animate-spin rounded-full border-4 border-gray-700 border-t-blue-500 mx-auto'></div>
                 <p className='text-gray-400'>Loading KYC SDK...</p>
@@ -149,7 +149,7 @@ export default function Home() {
           )}
 
           {error && (
-            <div className='min-h-[600px] rounded bg-red-950 p-4 text-red-200'>
+            <div className='min-h-150 rounded bg-red-950 p-4 text-red-200'>
               <h3 className='mb-2 font-bold'>Error initializing SDK</h3>
               <p>{error}</p>
               <p className='mt-4 text-sm text-red-300'>

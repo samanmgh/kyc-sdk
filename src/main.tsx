@@ -5,9 +5,40 @@ import { LanguageProvider, ThemeProvider } from "./provider";
 import type { SDK_Config } from "./types";
 import themeStyles from "./styles/theme.scss?raw";
 import { injectCustomStyles } from "./utils/style-injection";
+import { injectFallbackCSS } from "./utils/css-detection";
 import { isWidgetInitialized, markWidgetInitialized } from "./utils/widget-state";
 import "./index.css";
 import Widget from "./widget";
+
+declare global {
+  interface Window {
+    __KYC_SDK_CSS__?: string;
+  }
+}
+
+function getCompiledCSS(): string {
+  if (typeof window !== "undefined" && window.__KYC_SDK_CSS__) {
+    return window.__KYC_SDK_CSS__;
+  }
+  return "";
+}
+
+function copyStylesToIframe(iframeDoc: Document): void {
+  const parentStyles = document.querySelectorAll('style, link[rel="stylesheet"]');
+  parentStyles.forEach(style => {
+    if (style.tagName === "STYLE") {
+      const newStyle = iframeDoc.createElement("style");
+      newStyle.textContent = style.textContent;
+      iframeDoc.head.appendChild(newStyle);
+    } else if (style.tagName === "LINK") {
+      const link = style as HTMLLinkElement;
+      const newLink = iframeDoc.createElement("link");
+      newLink.rel = "stylesheet";
+      newLink.href = link.href;
+      iframeDoc.head.appendChild(newLink);
+    }
+  });
+}
 
 export function InitializeWidget(config: SDK_Config, containerSelector?: string) {
   if (isWidgetInitialized()) {
@@ -66,6 +97,7 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
   }
 
   let iframe = document.getElementById("widget-iframe") as HTMLIFrameElement;
+  const initialTheme = theme || "dark";
 
   const setupIframe = () => {
     const iframeDoc = iframe.contentWindow?.document;
@@ -79,22 +111,31 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
       sessionStorage.setItem("tenantId", String(tenantId));
     }
 
-    iframeDoc.body.style.backgroundColor = "transparent";
-    iframeDoc.documentElement.style.backgroundColor = "transparent";
+    const compiledCSS = getCompiledCSS();
+    if (compiledCSS) {
+      const mainStyle = iframeDoc.createElement("style");
+      mainStyle.id = "kyc-sdk-main-styles";
+      mainStyle.textContent = compiledCSS;
+      iframeDoc.head.appendChild(mainStyle);
+    } else {
+      copyStylesToIframe(iframeDoc);
+    }
 
     const themeStyle = iframeDoc.createElement("style");
     themeStyle.textContent = themeStyles;
     iframeDoc.head.appendChild(themeStyle);
 
+    injectFallbackCSS(initialTheme, iframeDoc);
+
+    if (initialTheme === "dark") {
+      iframeDoc.documentElement.classList.add("dark");
+    }
+
     if (styles) {
       injectCustomStyles(styles, iframeDoc);
     }
 
-    const BRIDGED_EVENTS = [
-      "widget-theme-change",
-      "widget-language-change",
-      "widget-style-change",
-    ];
+    const BRIDGED_EVENTS = ["widget-theme-change", "widget-language-change", "widget-style-change"];
 
     BRIDGED_EVENTS.forEach(eventName => {
       window.addEventListener(eventName, (event: Event) => {
@@ -110,6 +151,18 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
     };
     iframe.contentWindow?.addEventListener("widget-style-change", handleStyleChange);
 
+    const handleThemeChange = (event: Event) => {
+      const { theme: newTheme } = (event as CustomEvent).detail;
+      injectFallbackCSS(newTheme, iframeDoc);
+
+      if (newTheme === "dark") {
+        iframeDoc.documentElement.classList.add("dark");
+      } else {
+        iframeDoc.documentElement.classList.remove("dark");
+      }
+    };
+    iframe.contentWindow?.addEventListener("widget-theme-change", handleThemeChange);
+
     const container = iframeDoc.createElement("div");
     container.id = "widget-container";
     iframeDoc.body.appendChild(container);
@@ -118,7 +171,7 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
     root.render(
       <StrictMode>
         <LanguageProvider initialLanguage={language || "en"}>
-          <ThemeProvider config={{ debug: config.debug }} initialTheme={theme || "dark"}>
+          <ThemeProvider config={{ debug: config.debug }} initialTheme={initialTheme}>
             <Widget />
           </ThemeProvider>
         </LanguageProvider>

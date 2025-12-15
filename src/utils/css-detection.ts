@@ -71,25 +71,25 @@ export const DEFAULT_DARK_VARS: Record<string, string> = {
   "--radius": "0.625rem",
 };
 
-export function injectFallbackCSS(theme: "light" | "dark"): () => void {
+export function injectFallbackCSS(theme: "light" | "dark", targetDocument: Document = document): () => void {
   if (typeof window === "undefined") return () => {};
 
   const vars = theme === "dark" ? DEFAULT_DARK_VARS : DEFAULT_LIGHT_VARS;
   const styleId = "kyc-sdk-fallback-vars";
 
-  const existing = document.getElementById(styleId);
+  const existing = targetDocument.getElementById(styleId);
   if (existing) existing.remove();
 
-  const style = document.createElement("style");
+  const style = targetDocument.createElement("style");
   style.id = styleId;
   style.textContent = `:root { ${Object.entries(vars)
     .map(([k, v]) => `${k}: ${v};`)
     .join(" ")} }`;
 
-  document.head.appendChild(style);
+  targetDocument.head.appendChild(style);
 
   return () => {
-    const el = document.getElementById(styleId);
+    const el = targetDocument.getElementById(styleId);
     if (el) el.remove();
   };
 }
