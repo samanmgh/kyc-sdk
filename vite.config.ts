@@ -85,22 +85,10 @@ export default defineConfig(({ mode }) => {
             },
           },
           rollupOptions: {
-            external: [
-              'react',
-              'react-dom',
-              'react-dom/client',
-              'react/jsx-runtime',
-              'react/jsx-dev-runtime',
-            ],
+            external: [], // Bundle everything
             output: {
               exports: 'named' as const,
-              globals: {
-                react: 'React',
-                'react-dom': 'ReactDOM',
-                'react-dom/client': 'ReactDOM',
-                'react/jsx-runtime': 'jsxRuntime',
-                'react/jsx-dev-runtime': 'jsxRuntime',
-              },
+              globals: {}, // No external globals
               assetFileNames: (assetInfo) => {
                 if (assetInfo.name && assetInfo.name.endsWith('.css')) return 'index.css';
                 return assetInfo.name || 'assets/[name][extname]';
@@ -113,6 +101,10 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': path.resolve(__dirname, './src'),
       },
+    },
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(mode),
+      'process.env': JSON.stringify({}),
     },
   };
 });

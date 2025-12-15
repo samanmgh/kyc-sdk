@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>IIFE Test</title>
+</head>
+<body>
+<h1>Testing IIFE Bundle</h1>
+<script src="./dist/index.iife.js"></script>
+<script>
+  // Should be available globally
+  console.log('HelloWorldSDK available?', typeof KYC_SDK);
+
+  if (typeof KYC_SDK !== 'undefined') {
+    const sdk = new KYC_SDK.KYC_SDK({
+      apiKey: 'test-iife',
+      debug: true
+    });
+
+    sdk.init().then(function(result) {
+      console.log('IIFE SDK initialized:', result);
+    });
+  } else {
+    console.error('HelloWorldSDK not found in global scope');
+  }
+</script>
+</body>
+</html>
