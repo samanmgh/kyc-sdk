@@ -7,7 +7,6 @@ import {
 } from './utils';
 
 import type {
-  KYCConfig,
   SDK_Config,
   StyleConfig,
   InitResponse,
@@ -197,29 +196,4 @@ export function getWidgetInstance(): KYC_SDK | null {
   return widgetInstance;
 }
 
-export async function createKYCWidget(config: KYCConfig): Promise<KYC_SDK> {
-  const sdk = new KYC_SDK({
-    apiKey: config.apiKey,
-    tenantId: config.tenantId,
-    debug: config.debug,
-    theme: config.theme,
-    language: config.language,
-    styles: config.styles,
-  });
-
-  await sdk.init(config.container);
-
-  return sdk;
-}
-
 export default KYC_SDK;
-
-export type {
-  KYCConfig,
-  SDK_Config,
-  StyleConfig,
-  InitResponse,
-  ThemeChangeResponse,
-  StyleChangeResponse,
-  LanguageChangeResponse,
-} from './types';
