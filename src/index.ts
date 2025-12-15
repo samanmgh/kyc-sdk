@@ -8,9 +8,7 @@ import type {
   StyleChangeResponse,
 } from "./types";
 import { InitializeWidget } from "./main";
-import { resetWidgetState } from "./utils/widget-state";
-import { dispatchStyleChange } from "./utils/style-injection";
-import { watchHostThemeChanges, watchHostLanguageChanges } from "./utils/theme-detection";
+import { resetWidgetState, dispatchStyleChange, watchHostThemeChanges, watchHostLanguageChanges } from "./utils";
 
 let widgetInstance: KYC_SDK | null = null;
 

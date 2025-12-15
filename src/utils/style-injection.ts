@@ -1,4 +1,4 @@
-import type { StyleConfig } from '../types/widget';
+import type { StyleConfig } from '../types';
 
 const STYLE_ELEMENT_ID = 'kyc-sdk-custom-styles';
 

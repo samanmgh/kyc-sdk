@@ -2,13 +2,11 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import { LanguageProvider, ThemeProvider } from "./provider";
+import { injectFallbackCSS, injectCustomStyles, isWidgetInitialized, markWidgetInitialized } from "./utils";
+import Widget from "./Widget";
 import type { SDK_Config } from "./types";
 import themeStyles from "./styles/theme.scss?raw";
-import { injectCustomStyles } from "./utils/style-injection";
-import { injectFallbackCSS } from "./utils/css-detection";
-import { isWidgetInitialized, markWidgetInitialized } from "./utils/widget-state";
 import "./index.css";
-import Widget from "./widget";
 
 declare global {
   interface Window {
