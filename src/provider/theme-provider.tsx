@@ -22,7 +22,6 @@ export function ThemeProvider({
 
   const theme = isControlled ? controlledTheme : internalTheme;
 
-  // Inject CSS variables whenever theme changes
   useEffect(() => {
     const cleanup = injectFallbackCSS(theme);
     if (config.debug) {
@@ -48,7 +47,6 @@ export function ThemeProvider({
     setTheme(theme === 'dark' ? 'light' : 'dark');
   }, [theme, setTheme]);
 
-  // Listen for theme change events from SDK
   useEffect(() => {
     const handleThemeChange = (event: Event) => {
       const { theme: newTheme } = (event as CustomEvent).detail;

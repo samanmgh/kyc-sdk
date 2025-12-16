@@ -28,8 +28,7 @@ export function useSDKInitialization() {
           styles: config.styles,
         });
 
-        await instance.init(''); //iframe initialization
-        // await instance.init('#kyc-widget-container'); // For inline initialization
+        await instance.init();
         setIsInitialized(true);
       } catch (error) {
         console.error('Error initializing SDK:', error);

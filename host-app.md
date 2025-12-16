@@ -2,85 +2,9 @@
 
 ## React/Next.js
 
-### Inline Mode (Embedded in page with Shadow DOM)
+### Fullscreen Modal Mode
 
-> **Note**: Inline mode uses **Shadow DOM** for complete style isolation, similar to an iframe. This prevents any CSS conflicts between the host page and the SDK's styles. All Tailwind CSS variables and styles are encapsulated within the shadow root.
-
-```tsx
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import KYC_SDK from "@vero-compliance/kyc-sdk";
-
-export default function Home() {
-  const sdkRef = useRef<KYC_SDK | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-  const [language, setLanguage] = useState<"en" | "de">("en");
-
-  useEffect(() => {
-    if (sdkRef.current) return;
-
-    const initSDK = async () => {
-      // Wait for container to be available
-      if (!containerRef.current) {
-        console.warn("Container not ready");
-        return;
-      }
-
-      const sdk = new KYC_SDK({
-        apiKey: "your-api-key",
-        tenantId: 123,
-        theme: theme,
-        language: language,
-        debug: true,
-        styles: {
-          primary: "#3b82f6",
-          radius: "0.5rem",
-        },
-      });
-
-      // Pass selector to embed in specific container
-      await sdk.init("#kyc-container");
-      sdkRef.current = sdk;
-    };
-
-    initSDK();
-
-    return () => {
-      if (sdkRef.current) {
-        sdkRef.current.destroy();
-        sdkRef.current = null;
-      }
-    };
-  }, [theme, language]);
-
-  const handleThemeChange = (newTheme: "light" | "dark") => {
-    setTheme(newTheme);
-    sdkRef.current?.changeTheme(newTheme);
-  };
-
-  const handleLanguageChange = (newLang: "en" | "de") => {
-    setLanguage(newLang);
-    sdkRef.current?.changeLanguage(newLang);
-  };
-
-  return (
-    <div>
-      <div>
-        <button onClick={() => handleThemeChange("dark")}>Dark</button>
-        <button onClick={() => handleThemeChange("light")}>Light</button>
-        <button onClick={() => handleLanguageChange("en")}>English</button>
-        <button onClick={() => handleLanguageChange("de")}>German</button>
-      </div>
-
-      <div ref={containerRef} id="kyc-container" style={{ width: "100%", minHeight: "600px" }} />
-    </div>
-  );
-}
-```
-
-### Modal Mode (Fullscreen overlay)
+> **Note**: The SDK renders in a fullscreen iframe overlay for complete style isolation. This prevents any CSS conflicts between the host page and the SDK's styles.
 
 ```tsx
 "use client";
@@ -111,7 +35,7 @@ export default function Home() {
         },
       });
 
-      // No selector = fullscreen modal iframe
+      // Initialize fullscreen iframe
       await sdk.init();
       sdkRef.current = sdk;
     };
@@ -171,7 +95,7 @@ const sdk = new KYC_SDK({
 });
 
 // Methods
-await sdk.init(containerSelector?: string);
+await sdk.init();  // Initializes fullscreen iframe
 sdk.destroy();
 await sdk.changeTheme(theme: "light" | "dark");
 await sdk.changeLanguage(lang: "en" | "de");

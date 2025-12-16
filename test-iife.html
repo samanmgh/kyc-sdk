@@ -21,10 +21,9 @@
         });
 
         sdk
-          .init() // iframe
-          // .init('#test-container') // shadow root
+          .init()
           .then(function (result) {
-            console.log('IIFE SDK initialized (inline):', result);
+            console.log('IIFE SDK initialized:', result);
           })
           .catch(function (error) {
             console.error('Failed to initialize:', error);

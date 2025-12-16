@@ -1,4 +1,5 @@
 import { InitializeWidget } from './main';
+import { cleanupEventBridge } from './utils/cleanup';
 import {
   resetWidgetState,
   dispatchStyleChange,
@@ -38,9 +39,7 @@ class KYC_SDK {
     if (this.debug) this.log('KYC_SDK constructed', options);
   }
 
-  public init(containerSelector?: string): Promise<InitResponse> {
-    if (this.debug) this.log('KYC_SDK initialized');
-
+  public init(): Promise<InitResponse> {
     const config: SDK_Config = {
       apiKey: this.apiKey,
       tenantId: this.tenantId,
@@ -50,11 +49,12 @@ class KYC_SDK {
       styles: this.styles,
     };
 
-    InitializeWidget(config, containerSelector);
+    InitializeWidget(config);
 
-    // Start watchers for reactive updates
     this.startThemeWatcher();
     this.startLanguageWatcher();
+
+    if (this.debug) this.log('KYC_SDK initialized');
 
     return Promise.resolve({ ok: true });
   }
@@ -99,10 +99,7 @@ class KYC_SDK {
     this.stopThemeWatcher();
     this.stopLanguageWatcher();
 
-    const shadowHost = document.getElementById('widget-shadow-host');
-    if (shadowHost) {
-      shadowHost.remove();
-    }
+    cleanupEventBridge();
 
     const iframe = document.getElementById('widget-iframe');
     if (iframe) {
@@ -126,7 +123,6 @@ class KYC_SDK {
   }
 
   public changeLanguage(lang: 'en' | 'de'): Promise<LanguageChangeResponse> {
-    // Skip if language is already the same
     if (lang === this.currentLang) {
       return Promise.resolve({
         success: true,
@@ -153,7 +149,6 @@ class KYC_SDK {
   }
 
   public changeTheme(theme: 'light' | 'dark'): Promise<ThemeChangeResponse> {
-    // Skip if theme is already the same
     if (theme === this.currentTheme) {
       return Promise.resolve({
         success: true,

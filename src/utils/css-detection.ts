@@ -71,13 +71,24 @@ export const DEFAULT_DARK_VARS: Record<string, string> = {
   '--radius': '0.625rem',
 };
 
+/**
+ * Generates CSS string with fallback variables for the given theme
+ * @param theme - 'light' or 'dark'
+ * @returns CSS string with :root variables
+ */
+export function generateFallbackCSS(theme: 'light' | 'dark'): string {
+  const vars = theme === 'dark' ? DEFAULT_DARK_VARS : DEFAULT_LIGHT_VARS;
+  return `:root { ${Object.entries(vars)
+    .map(([k, v]) => `${k}: ${v};`)
+    .join(' ')} }`;
+}
+
 export function injectFallbackCSS(
   theme: 'light' | 'dark',
   targetDocument: Document = document
 ): () => void {
   if (typeof window === 'undefined') return () => {};
 
-  const vars = theme === 'dark' ? DEFAULT_DARK_VARS : DEFAULT_LIGHT_VARS;
   const styleId = 'kyc-sdk-fallback-vars';
 
   const existing = targetDocument.getElementById(styleId);
@@ -85,9 +96,7 @@ export function injectFallbackCSS(
 
   const style = targetDocument.createElement('style');
   style.id = styleId;
-  style.textContent = `:root { ${Object.entries(vars)
-    .map(([k, v]) => `${k}: ${v};`)
-    .join(' ')} }`;
+  style.textContent = generateFallbackCSS(theme);
 
   targetDocument.head.appendChild(style);
 

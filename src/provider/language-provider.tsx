@@ -23,7 +23,6 @@ export function LanguageProvider({ children, initialLanguage = 'en' }: LanguageP
     [language]
   );
 
-  // Listen for external language change events from SDK
   useEffect(() => {
     const handleLanguageChange = (event: Event) => {
       const { lang } = (event as CustomEvent).detail;

@@ -1,16 +1,9 @@
-/**
- * Theme and language detection utilities
- * Watches for theme and language changes in the host application
- */
-
 type Theme = 'light' | 'dark';
 type Language = 'en' | 'de';
 
 /**
  * Watches for theme changes in the host application
  * Monitors: document class changes, data-theme/data-mode attributes
- * @param callback - Function to call when theme changes
- * @returns Cleanup function to stop watching
  */
 export function watchHostThemeChanges(callback: (theme: Theme) => void): () => void {
   if (typeof window === 'undefined') return () => {};
@@ -18,20 +11,16 @@ export function watchHostThemeChanges(callback: (theme: Theme) => void): () => v
   let currentTheme: Theme | null = null;
 
   const detectTheme = (): Theme | null => {
-    // Check document element class
     const docClasses = document.documentElement.classList;
     if (docClasses.contains('dark')) return 'dark';
     if (docClasses.contains('light')) return 'light';
 
-    // Check data-theme attribute (common in Next.js themes)
     const dataTheme = document.documentElement.getAttribute('data-theme');
     if (dataTheme === 'dark' || dataTheme === 'light') return dataTheme;
 
-    // Check data-mode attribute
     const dataMode = document.documentElement.getAttribute('data-mode');
     if (dataMode === 'dark' || dataMode === 'light') return dataMode;
 
-    // Check body class
     const bodyClasses = document.body?.classList;
     if (bodyClasses?.contains('dark')) return 'dark';
     if (bodyClasses?.contains('light')) return 'light';
@@ -39,7 +28,6 @@ export function watchHostThemeChanges(callback: (theme: Theme) => void): () => v
     return null;
   };
 
-  // Initialize current theme
   currentTheme = detectTheme();
 
   // Watch for class and attribute changes on document element
@@ -57,7 +45,6 @@ export function watchHostThemeChanges(callback: (theme: Theme) => void): () => v
     attributeFilter: ['class', 'data-theme', 'data-mode'],
   });
 
-  // Also watch body for class changes
   if (document.body) {
     observer.observe(document.body, {
       attributes: true,
@@ -65,7 +52,6 @@ export function watchHostThemeChanges(callback: (theme: Theme) => void): () => v
     });
   }
 
-  // Return cleanup function
   return () => {
     observer.disconnect();
   };
@@ -74,15 +60,12 @@ export function watchHostThemeChanges(callback: (theme: Theme) => void): () => v
 /**
  * Watches for language changes in the host application
  * Monitors: lang attribute on document element
- * @param callback - Function to call when language changes to 'en' or 'de'
- * @returns Cleanup function to stop watching
  */
 export function watchHostLanguageChanges(callback: (lang: Language) => void): () => void {
   if (typeof window === 'undefined') return () => {};
 
   let currentLang: Language | null = null;
 
-  // Initialize current language
   const initialLang = document.documentElement.getAttribute('lang');
   if (initialLang === 'en' || initialLang === 'de') {
     currentLang = initialLang;
@@ -90,7 +73,7 @@ export function watchHostLanguageChanges(callback: (lang: Language) => void): ()
 
   const observer = new MutationObserver(() => {
     const lang = document.documentElement.getAttribute('lang');
-    // Only call callback if language actually changed
+
     if ((lang === 'en' || lang === 'de') && lang !== currentLang) {
       currentLang = lang;
       callback(lang);
@@ -102,7 +85,6 @@ export function watchHostLanguageChanges(callback: (lang: Language) => void): ()
     attributeFilter: ['lang'],
   });
 
-  // Return cleanup function
   return () => {
     observer.disconnect();
   };

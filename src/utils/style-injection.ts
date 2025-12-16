@@ -3,20 +3,9 @@ import type { StyleConfig } from '@/types';
 const STYLE_ELEMENT_ID = 'kyc-sdk-custom-styles';
 
 /**
- * Injects custom CSS variables into the document
- * @param styles - StyleConfig object with custom values
- * @param targetDocument - Document to inject styles into (defaults to window.document)
- * @returns Cleanup function to remove injected styles
+ * Generates CSS string with custom style variables
  */
-export function injectCustomStyles(
-  styles: StyleConfig,
-  targetDocument: Document = document
-): () => void {
-  // Remove existing custom styles
-  const existing = targetDocument.getElementById(STYLE_ELEMENT_ID);
-  if (existing) existing.remove();
-
-  // Build CSS variable overrides
+export function generateCustomStylesCSS(styles: StyleConfig): string {
   const cssVars: string[] = [];
 
   if (styles.primary) cssVars.push(`--primary: ${styles.primary}`);
@@ -28,15 +17,26 @@ export function injectCustomStyles(
   if (styles.muted) cssVars.push(`--muted: ${styles.muted}`);
   if (styles.destructive) cssVars.push(`--destructive: ${styles.destructive}`);
 
-  if (cssVars.length === 0) return () => {};
+  if (cssVars.length === 0) return '';
 
-  // Create and inject style element
+  return `:root { ${cssVars.join('; ')}; }`;
+}
+
+export function injectCustomStyles(
+  styles: StyleConfig,
+  targetDocument: Document = document
+): () => void {
+  const existing = targetDocument.getElementById(STYLE_ELEMENT_ID);
+  if (existing) existing.remove();
+
+  const cssContent = generateCustomStylesCSS(styles);
+  if (!cssContent) return () => {};
+
   const style = targetDocument.createElement('style');
   style.id = STYLE_ELEMENT_ID;
-  style.textContent = `:root { ${cssVars.join('; ')}; }`;
+  style.textContent = cssContent;
   targetDocument.head.appendChild(style);
 
-  // Return cleanup function
   return () => {
     const el = targetDocument.getElementById(STYLE_ELEMENT_ID);
     if (el) el.remove();
@@ -45,7 +45,6 @@ export function injectCustomStyles(
 
 /**
  * Dispatches a custom event to notify widget of style changes
- * @param styles - StyleConfig object with new values
  */
 export function dispatchStyleChange(styles: StyleConfig): void {
   if (typeof window !== 'undefined') {
