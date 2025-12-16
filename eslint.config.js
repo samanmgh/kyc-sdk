@@ -11,9 +11,10 @@ import prettier from 'eslint-plugin-prettier'
 import {defineConfig, globalIgnores} from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', '**/*.d.ts']),
   {
     files: ['**/*.{ts,tsx}'],
+    ignores: ['**/*.d.ts'],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,

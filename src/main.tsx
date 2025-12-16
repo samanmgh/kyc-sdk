@@ -3,7 +3,7 @@ import themeStyles from './styles/theme.scss?raw';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import Widget from './Widget';
+import Widget from './widget';
 import { ThemeProvider, LanguageProvider } from './provider';
 import {
   injectFallbackCSS,
@@ -148,19 +148,23 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
     inlineContainer.style.height = '100%';
     inlineContainer.style.minHeight = '600px';
 
-    // Inject compiled CSS into shadow DOM
+    // Inject compiled CSS into shadow DOM (process for shadow DOM compatibility)
     const compiledCSS = getCompiledCSS();
     if (compiledCSS) {
       const mainStyle = document.createElement('style');
       mainStyle.id = 'kyc-sdk-main-styles';
-      mainStyle.textContent = compiledCSS;
+      // Replace :root with :host for shadow DOM compatibility
+      const shadowCompatibleCSS = compiledCSS.replace(/:root\b/g, ':host');
+      mainStyle.textContent = shadowCompatibleCSS;
       shadowRoot.appendChild(mainStyle);
     }
 
-    // Inject theme styles into shadow DOM
+    // Inject theme styles into shadow DOM (process for shadow DOM compatibility)
     const themeStyle = document.createElement('style');
     themeStyle.id = 'kyc-sdk-theme-styles';
-    themeStyle.textContent = themeStyles;
+    // Replace :root with :host for shadow DOM compatibility
+    const shadowCompatibleThemeStyles = themeStyles.replace(/:root\b/g, ':host');
+    themeStyle.textContent = shadowCompatibleThemeStyles;
     shadowRoot.appendChild(themeStyle);
 
     // Inject fallback CSS for theme

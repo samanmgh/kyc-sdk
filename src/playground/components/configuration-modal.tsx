@@ -1,5 +1,3 @@
-import { getWidgetInstance } from '@/index';
-
 import { Modal } from './modal';
 import { ColorPicker } from './color-picker';
 import { LanguageSelector } from './language-selector';
@@ -25,37 +23,19 @@ export function ConfigurationModal({
     const newStyles = { ...config.styles, ...styleUpdate };
     onConfigChange({ styles: newStyles });
 
-    // If SDK is initialized, apply styles immediately
-    if (isInitialized) {
-      const instance = getWidgetInstance();
-      if (instance) {
-        instance.changeStyles(newStyles);
-      }
-    }
+    // Note: Direct SDK instance access removed - styles managed through props
   };
 
   const handleLanguageChange = (language: 'en' | 'de') => {
     onConfigChange({ language });
 
-    // If SDK is initialized, change language immediately
-    if (isInitialized) {
-      const instance = getWidgetInstance();
-      if (instance) {
-        instance.changeLanguage(language);
-      }
-    }
+    // Note: Direct SDK instance access removed - language managed through props
   };
 
   const handleThemeChange = (theme: 'light' | 'dark') => {
     onConfigChange({ theme });
 
-    // If SDK is initialized, change theme immediately
-    if (isInitialized) {
-      const instance = getWidgetInstance();
-      if (instance) {
-        instance.changeTheme(theme);
-      }
-    }
+    // Note: Direct SDK instance access removed - theme managed through props
   };
 
   return (

@@ -1,23 +1,8 @@
-import fs from 'fs';
 import path from 'path';
+import dts from 'vite-plugin-dts';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { type Plugin, defineConfig, type LibraryFormats } from 'vite';
-
-// Custom plugin to copy TypeScript declaration file to dist
-function copyDtsPlugin(): Plugin {
-  return {
-    name: 'copy-dts-plugin',
-    closeBundle() {
-      const srcDts = path.resolve(__dirname, 'src/index.d.ts');
-      const distDts = path.resolve(__dirname, 'dist/index.d.ts');
-
-      if (fs.existsSync(srcDts)) {
-        fs.copyFileSync(srcDts, distDts);
-      }
-    },
-  };
-}
 
 // Custom plugin to embed CSS string into the JS bundle for iframe injection
 function cssEmbedPlugin(): Plugin {
@@ -55,9 +40,24 @@ export default defineConfig(({ mode }) => {
   const isDev = mode === 'development';
 
   return {
-    plugins: [react(), tailwindcss(), !isDev && cssEmbedPlugin(), !isDev && copyDtsPlugin()].filter(
-      Boolean
-    ),
+    plugins: [
+      react(),
+      tailwindcss(),
+      !isDev && cssEmbedPlugin(),
+      !isDev &&
+        dts({
+          include: ['src'],
+          exclude: [
+            'src/**/*.test.ts',
+            'src/**/*.test.tsx',
+            'src/**/*.spec.ts',
+            'src/playground/**/*',
+          ],
+          outDir: 'dist',
+          tsconfigPath: './tsconfig.app.json',
+          rollupTypes: true,
+        }),
+    ].filter(Boolean),
     build: isDev
       ? undefined
       : {

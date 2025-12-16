@@ -1,5 +1,5 @@
+import KYC_SDK from '../../index';
 import { InitializeButton } from './initialize-button';
-import KYC_SDK, { getWidgetInstance } from '../../index';
 import { ConfigurationToggle } from './configuration-toggle';
 
 const AVAILABLE_LANGUAGES = [
@@ -26,10 +26,7 @@ export function PlaygroundHeader({
     const lang = e.target.value as 'en' | 'de';
     onLanguageChange(lang);
 
-    const instance = getWidgetInstance();
-    if (instance) {
-      instance.changeLanguage(lang);
-    }
+    // Note: Direct SDK instance access removed - use props to manage state
   };
 
   return (

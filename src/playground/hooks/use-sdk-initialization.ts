@@ -29,7 +29,7 @@ export function useSDKInitialization() {
         });
 
         await instance.init(''); //iframe initialization
-        //  await instance.init("#kyc-widget-container"); // For inline initialization
+        // await instance.init('#kyc-widget-container'); // For inline initialization
         setIsInitialized(true);
       } catch (error) {
         console.error('Error initializing SDK:', error);
