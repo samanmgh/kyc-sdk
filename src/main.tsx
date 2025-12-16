@@ -12,7 +12,7 @@ import {
   markWidgetInitialized,
 } from './utils';
 
-import type { SDK_Config } from './types';
+import type { SDK_Config, StyleConfig } from './types';
 import './index.css';
 
 declare global {
@@ -26,6 +26,64 @@ function getCompiledCSS(): string {
     return window.__KYC_SDK_CSS__;
   }
   return '';
+}
+
+function generateFallbackCSS(theme: 'light' | 'dark'): string {
+  // Generate CSS custom properties for the theme
+  const lightTheme = `
+    :host, :root {
+      --background: oklch(100% 0 0);
+      --foreground: oklch(20% 0 0);
+      --primary: oklch(55% 0.22 264);
+      --primary-foreground: oklch(100% 0 0);
+      --secondary: oklch(50% 0.02 264);
+      --secondary-foreground: oklch(100% 0 0);
+      --muted: oklch(97% 0 0);
+      --muted-foreground: oklch(50% 0.02 264);
+      --destructive: oklch(57.7% 0.245 27.325);
+      --destructive-foreground: oklch(100% 0 0);
+      --border: oklch(90% 0 0);
+      --ring: oklch(55% 0.22 264);
+      --radius: 0.625rem;
+    }
+  `;
+
+  const darkTheme = `
+    :host, :root {
+      --background: oklch(20% 0 0);
+      --foreground: oklch(97% 0 0);
+      --primary: oklch(55% 0.22 264);
+      --primary-foreground: oklch(100% 0 0);
+      --secondary: oklch(30% 0 0);
+      --secondary-foreground: oklch(97% 0 0);
+      --muted: oklch(30% 0 0);
+      --muted-foreground: oklch(65% 0.02 264);
+      --destructive: oklch(57.7% 0.245 27.325);
+      --destructive-foreground: oklch(97% 0 0);
+      --border: oklch(32% 0 0);
+      --ring: oklch(55% 0.22 264);
+      --radius: 0.625rem;
+    }
+  `;
+
+  return theme === 'dark' ? darkTheme : lightTheme;
+}
+
+function generateCustomStylesCSS(styles: StyleConfig): string {
+  const cssVars: string[] = [];
+
+  if (styles.primary) cssVars.push(`--primary: ${styles.primary};`);
+  if (styles.radius) cssVars.push(`--radius: ${styles.radius};`);
+  if (styles.background) cssVars.push(`--background: ${styles.background};`);
+  if (styles.foreground) cssVars.push(`--foreground: ${styles.foreground};`);
+  if (styles.border) cssVars.push(`--border: ${styles.border};`);
+  if (styles.secondary) cssVars.push(`--secondary: ${styles.secondary};`);
+  if (styles.muted) cssVars.push(`--muted: ${styles.muted};`);
+  if (styles.destructive) cssVars.push(`--destructive: ${styles.destructive};`);
+
+  if (cssVars.length === 0) return '';
+
+  return `:host, :root { ${cssVars.join(' ')} }`;
 }
 
 function copyStylesToIframe(iframeDoc: Document): void {
@@ -65,28 +123,98 @@ export function InitializeWidget(config: SDK_Config, containerSelector?: string)
 
   const targetContainer = containerSelector ? document.querySelector(containerSelector) : null;
 
+  if (containerSelector && !targetContainer) {
+    console.error(
+      `[KYC_SDK] Container element "${containerSelector}" not found. Make sure the element exists in the DOM before initializing the SDK.`
+    );
+    throw new Error(`Container element "${containerSelector}" not found`);
+  }
+
   if (targetContainer) {
+    // Create shadow host
+    const shadowHost = document.createElement('div');
+    shadowHost.id = 'widget-shadow-host';
+    shadowHost.style.width = '100%';
+    shadowHost.style.height = '100%';
+    shadowHost.style.minHeight = '600px';
+
+    // Attach shadow DOM for style isolation
+    const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+
+    // Create container inside shadow DOM
     const inlineContainer = document.createElement('div');
     inlineContainer.id = 'widget-inline-container';
     inlineContainer.style.width = '100%';
     inlineContainer.style.height = '100%';
     inlineContainer.style.minHeight = '600px';
 
-    targetContainer.appendChild(inlineContainer);
+    // Inject compiled CSS into shadow DOM
+    const compiledCSS = getCompiledCSS();
+    if (compiledCSS) {
+      const mainStyle = document.createElement('style');
+      mainStyle.id = 'kyc-sdk-main-styles';
+      mainStyle.textContent = compiledCSS;
+      shadowRoot.appendChild(mainStyle);
+    }
 
+    // Inject theme styles into shadow DOM
     const themeStyle = document.createElement('style');
+    themeStyle.id = 'kyc-sdk-theme-styles';
     themeStyle.textContent = themeStyles;
-    document.head.appendChild(themeStyle);
+    shadowRoot.appendChild(themeStyle);
+
+    // Inject fallback CSS for theme
+    const initialTheme = theme || 'dark';
+    const fallbackStyle = document.createElement('style');
+    fallbackStyle.id = 'kyc-sdk-fallback-styles';
+    fallbackStyle.textContent = generateFallbackCSS(initialTheme);
+    shadowRoot.appendChild(fallbackStyle);
+
+    // Apply dark class to container if needed
+    if (initialTheme === 'dark') {
+      inlineContainer.classList.add('dark');
+    }
 
     if (styles) {
-      injectCustomStyles(styles, document);
+      const customStyle = document.createElement('style');
+      customStyle.id = 'kyc-sdk-custom-styles';
+      customStyle.textContent = generateCustomStylesCSS(styles);
+      shadowRoot.appendChild(customStyle);
     }
+
+    shadowRoot.appendChild(inlineContainer);
+    targetContainer.appendChild(shadowHost);
 
     const handleStyleChange = (event: Event) => {
       const { styles: newStyles } = (event as CustomEvent).detail;
-      injectCustomStyles(newStyles, document);
+      const customStyle = shadowRoot.getElementById('kyc-sdk-custom-styles') as HTMLStyleElement;
+      if (customStyle) {
+        customStyle.textContent = generateCustomStylesCSS(newStyles);
+      } else {
+        const newCustomStyle = document.createElement('style');
+        newCustomStyle.id = 'kyc-sdk-custom-styles';
+        newCustomStyle.textContent = generateCustomStylesCSS(newStyles);
+        shadowRoot.appendChild(newCustomStyle);
+      }
     };
     window.addEventListener('widget-style-change', handleStyleChange);
+
+    const handleThemeChange = (event: Event) => {
+      const { theme: newTheme } = (event as CustomEvent).detail;
+      const fallbackStyle = shadowRoot.getElementById(
+        'kyc-sdk-fallback-styles'
+      ) as HTMLStyleElement;
+      if (fallbackStyle) {
+        fallbackStyle.textContent = generateFallbackCSS(newTheme);
+      }
+
+      if (newTheme === 'dark') {
+        inlineContainer.classList.add('dark');
+      } else {
+        inlineContainer.classList.remove('dark');
+      }
+    };
+    window.addEventListener('widget-theme-change', handleThemeChange);
 
     const root = createRoot(inlineContainer);
     root.render(

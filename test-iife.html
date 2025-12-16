@@ -1,27 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>IIFE Test</title>
-</head>
-<body>
-<h1>Testing IIFE Bundle</h1>
-<script src="./dist/index.iife.js"></script>
-<script>
-  // Should be available globally
-  console.log('HelloWorldSDK available?', typeof KYC_SDK);
+  <head>
+    <title>IIFE Test</title>
+  </head>
+  <body>
+    <h1>Testing IIFE Bundle</h1>
+    <script src="./dist/index.iife.js"></script>
+    <div id="test-container" style="width: 100%; min-height: 600px; border: 2px solid red"></div>
 
-  if (typeof KYC_SDK !== 'undefined') {
-    const sdk = new KYC_SDK.KYC_SDK({
-      apiKey: 'test-iife',
-      debug: true
-    });
+    <script>
+      console.log('KYC_SDK available?', typeof KYC_SDK);
 
-    sdk.init().then(function(result) {
-      console.log('IIFE SDK initialized:', result);
-    });
-  } else {
-    console.error('HelloWorldSDK not found in global scope');
-  }
-</script>
-</body>
+      if (typeof KYC_SDK !== 'undefined') {
+        const sdk = new KYC_SDK({
+          apiKey: 'test-iife',
+          tenantId: 123,
+          debug: true,
+          theme: 'dark',
+          language: 'en',
+        });
+
+        sdk
+          .init() // iframe
+          // .init('#test-container') // shadow root
+          .then(function (result) {
+            console.log('IIFE SDK initialized (inline):', result);
+          })
+          .catch(function (error) {
+            console.error('Failed to initialize:', error);
+          });
+      } else {
+        console.error('KYC_SDK not found in global scope');
+      }
+    </script>
+  </body>
 </html>

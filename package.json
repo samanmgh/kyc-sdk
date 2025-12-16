@@ -13,7 +13,6 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "browser": "./dist/index.iife.js",
-  "style": "./dist/index.css",
   "files": [
     "dist"
   ],
@@ -22,9 +21,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    },
-    "./styles": {
-      "default": "./dist/index.css"
     }
   },
   "scripts": {

@@ -15,9 +15,7 @@ import type {
   LanguageChangeResponse,
 } from './types';
 
-let widgetInstance: KYC_SDK | null = null;
-
-export class KYC_SDK {
+class KYC_SDK {
   static version = '0.0.1';
 
   private apiKey: string;
@@ -53,9 +51,6 @@ export class KYC_SDK {
     };
 
     InitializeWidget(config, containerSelector);
-
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    widgetInstance = this;
 
     // Start watchers for reactive updates
     this.startThemeWatcher();
@@ -104,9 +99,9 @@ export class KYC_SDK {
     this.stopThemeWatcher();
     this.stopLanguageWatcher();
 
-    const inlineContainer = document.getElementById('widget-inline-container');
-    if (inlineContainer) {
-      inlineContainer.remove();
+    const shadowHost = document.getElementById('widget-shadow-host');
+    if (shadowHost) {
+      shadowHost.remove();
     }
 
     const iframe = document.getElementById('widget-iframe');
@@ -115,7 +110,6 @@ export class KYC_SDK {
     }
 
     resetWidgetState();
-    widgetInstance = null;
 
     if (this.debug) this.log('KYC_SDK destroyed');
   }
@@ -190,10 +184,6 @@ export class KYC_SDK {
       console.log('[KYC_SDK]', ...args);
     }
   }
-}
-
-export function getWidgetInstance(): KYC_SDK | null {
-  return widgetInstance;
 }
 
 export default KYC_SDK;
