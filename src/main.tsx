@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import Widget from './widget';
+import Widget from './Widget';
 import { setEventBridgeCleanup } from './utils/cleanup';
 import { ThemeProvider, LanguageProvider } from './provider';
 import { setupEventBridge } from './initialization/event-bridge';
