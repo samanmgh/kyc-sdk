@@ -1,4 +1,4 @@
-const {KYC_SDK} = require('./dist/index.cjs');
+const KYC_SDK = require('./dist/index.cjs');
 
 const sdk = new KYC_SDK({
     apiKey: "test",
