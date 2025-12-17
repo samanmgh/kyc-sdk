@@ -263,6 +263,7 @@ export function MultiSelect<T = string>({
                     <div
                       key={String(option.value)}
                       role="option"
+                      tabIndex={option.disabled || isMaxReached ? -1 : 0}
                       aria-selected={isSelected}
                       aria-disabled={option.disabled || isMaxReached || undefined}
                       className={cn(
@@ -280,6 +281,14 @@ export function MultiSelect<T = string>({
                       onClick={() =>
                         !option.disabled && !isMaxReached && toggleOption(option.value)
                       }
+                      onKeyDown={(e) => {
+                        if (option.disabled || isMaxReached) return;
+
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          toggleOption(option.value);
+                        }
+                      }}
                     >
                       <div className="flex items-center gap-3">
                         <div
